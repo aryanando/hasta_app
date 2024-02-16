@@ -1,0 +1,7 @@
+{
+    "env:": "dev",
+    "clientid": "",
+    "clientsecret": "",
+    "callbackUrl": "",
+    "devUrl": "http://10.20.30.28:8000/"
+}
