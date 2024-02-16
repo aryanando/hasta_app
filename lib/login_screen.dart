@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   Future<void> login(String email, String password) async {
-    const apiUrl = 'http://10.20.30.28:8000/api/v1/login';
+    const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/login';
 
     final response = await http.post(Uri.parse(apiUrl), body: {
       'email': email,
@@ -58,7 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
         (route) => false,
       );
     } else {
-      debugPrint("Failed To Authenticate");
+      debugPrint(apiUrl);
+      print(response.statusCode);
     }
   }
 
