@@ -1,3 +1,5 @@
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'package:http/http.dart' as http;
@@ -50,26 +52,62 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('Welcome, ${widget.name}!'),
-            const SizedBox(height: 16.0),
-            const SizedBox(height: 16.0),
-            const Text('Your Identity'),
-            const SizedBox(height: 16.0),
-            Text('ID: ${widget.id}'),
-            const SizedBox(height: 16.0),
-            Text('Email: ${widget.email}'),
-            const SizedBox(height: 16.0),
-            Text('Name: ${widget.name}'),
-            const SizedBox(height: 16.0),
-            const Text('Token:'),
-            Text(widget.token),
-          ],
-        ),
+      // body: Center(
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     crossAxisAlignment: CrossAxisAlignment.center,
+      //     children: [
+      //       Text('Welcome, ${widget.name}!'),
+      //       const SizedBox(height: 16.0),
+      //       const SizedBox(height: 16.0),
+      //       const Text('Your Identity'),
+      //       const SizedBox(height: 16.0),
+      //       Text('ID: ${widget.id}'),
+      //       const SizedBox(height: 16.0),
+      //       Text('Email: ${widget.email}'),
+      //       const SizedBox(height: 16.0),
+      //       Text('Name: ${widget.name}'),
+      //       const SizedBox(height: 16.0),
+      //       const Text('Token:'),
+      //       Text(widget.token),
+      //     ],
+      //   ),
+      // ),
+      bottomNavigationBar: CurvedNavigationBar(
+        index: 0,
+        items: const [
+          CurvedNavigationBarItem(
+            child: Icon(Icons.home_outlined),
+            label: 'Beranda',
+          ),
+          CurvedNavigationBarItem(
+            child: Icon(Icons.search),
+            label: 'Cari',
+          ),
+          CurvedNavigationBarItem(
+            child: Icon(Icons.chat_bubble_outline),
+            label: 'Chat',
+          ),
+          CurvedNavigationBarItem(
+            child: Icon(Icons.newspaper),
+            label: 'Feed',
+          ),
+          CurvedNavigationBarItem(
+            child: Icon(Icons.perm_identity),
+            label: 'Profil',
+          ),
+        ],
+        color: const Color(0xffdcf2f1),
+        buttonBackgroundColor: const Color(0xffdcf2f1),
+        backgroundColor: Colors.white,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 600),
+        onTap: (index) {
+          // setState(() {
+          //   _page = index;
+          // });
+        },
+        letIndexChange: (index) => true,
       ),
     );
   }
