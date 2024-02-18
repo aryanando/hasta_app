@@ -2,6 +2,7 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -22,6 +23,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var now = DateTime.now();
+  var formatter = DateFormat('yyyy-MM-dd');
+  late String formattedDate = formatter.format(now);
   Future<void> handleLogout(String token) async {
     const url = '${const String.fromEnvironment('devUrl')}api/v1/logout';
     final headers = {
@@ -43,14 +47,57 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            onPressed: () => handleLogout(widget.token),
-            icon: const Icon(Icons.logout),
+      // appBar: AppBar(
+      //   title: const Text('Home'),
+      //   actions: [
+      //     IconButton(
+      //       onPressed: () => handleLogout(widget.token),
+      //       icon: const Icon(Icons.logout),
+      //     ),
+      //   ],
+      // ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hai, ${widget.name}!',
+                        style: TextStyle(
+                          color: Color(0xff0f1035),
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        formattedDate,
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 46, 46, 46),
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Color(0xffdcf2f1),
+                        borderRadius: BorderRadius.circular(12)),
+                    padding: EdgeInsets.all(12),
+                    child: Icon(Icons.notifications),
+                  )
+                ],
+              )
+            ],
           ),
-        ],
+        ),
       ),
       // body: Center(
       //   child: Column(
@@ -79,10 +126,6 @@ class _HomePageState extends State<HomePage> {
           CurvedNavigationBarItem(
             child: Icon(Icons.home_outlined),
             label: 'Beranda',
-          ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.search),
-            label: 'Cari',
           ),
           CurvedNavigationBarItem(
             child: Icon(Icons.chat_bubble_outline),
