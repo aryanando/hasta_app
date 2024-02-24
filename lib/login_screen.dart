@@ -66,159 +66,164 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
-      children: [
-        Container(
-          height: double.infinity,
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Color(0xff7fc7d9),
-              Color(0xff365486),
-            ]),
-          ),
-          child: const Padding(
-            padding: EdgeInsets.only(top: 60.0, left: 22),
-            child: Text(
-              'Halo...\nMasuk!...',
-              style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 200.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-              color: Colors.white,
-            ),
-            height: double.infinity,
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 18.0, right: 18),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextFormField(
-                    controller: emailController,
-                    decoration: const InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.check,
-                          color: Colors.grey,
-                        ),
-                        label: Text(
-                          'Email',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff365486),
-                          ),
-                        )),
-                  ),
-                  TextFormField(
-                    controller: passwordController,
-                    obscureText: true,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: const InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
-                        label: Text(
-                          'Sandi',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff365486),
-                          ),
-                        )),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      'Lupa Sandi?..',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                        color: Color(0xff281537),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 70,
-                  ),
-                  Container(
-                    height: 55,
-                    width: 300,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      gradient: const LinearGradient(colors: [
-                        Color(0xff7fc7d9),
-                        Color(0xff365486),
-                      ]),
-                    ),
-                    child: Center(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent),
-                        onPressed: () {
-                          login(emailController.text, passwordController.text);
-                        },
-                        child: const Text(
-                          'Masuk',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 150,
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Text(
-                          "Belum punya akun?",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.grey),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const RegScreen()));
-                          },
-                          child: const Text(
-                            "Daftar",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17,
-                                color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+          children: [
+            Container(
+              height: double.infinity,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  Color(0xff7fc7d9),
+                  Color(0xff365486),
+                ]),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.only(top: 60.0, left: 22),
+                child: Text(
+                  'Halo...\nMasuk!...',
+                  style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-          ),
-        ),
-      ],
-    ));
+            Padding(
+              padding: const EdgeInsets.only(top: 200.0),
+              child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40)),
+                  color: Colors.white,
+                ),
+                height: double.infinity,
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 18.0, right: 18),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
+                            suffixIcon: Icon(
+                              Icons.check,
+                              color: Colors.grey,
+                            ),
+                            label: Text(
+                              'Email',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff365486),
+                              ),
+                            )),
+                      ),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration: const InputDecoration(
+                            suffixIcon: Icon(
+                              Icons.visibility_off,
+                              color: Colors.grey,
+                            ),
+                            label: Text(
+                              'Sandi',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff365486),
+                              ),
+                            )),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          'Lupa Sandi?..',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            color: Color(0xff281537),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 70,
+                      ),
+                      Container(
+                        height: 55,
+                        width: 300,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          gradient: const LinearGradient(colors: [
+                            Color(0xff7fc7d9),
+                            Color(0xff365486),
+                          ]),
+                        ),
+                        child: Center(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent),
+                            onPressed: () {
+                              login(emailController.text,
+                                  passwordController.text);
+                            },
+                            child: const Text(
+                              'Masuk',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 150,
+                      ),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            const Text(
+                              "Belum punya akun?",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const RegScreen()));
+                              },
+                              child: const Text(
+                                "Daftar",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 }
