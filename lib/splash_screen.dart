@@ -4,8 +4,36 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'login_screen.dart';
 
-class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+
+  // Variables to store the shared preference data
+  String? _token;
+  String? _name;
+
+  // Method to load the shared preference data
+  void _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _token = prefs.getString('token') ?? '';
+      _name = prefs.getString('name') ?? '';
+    });
+    print('Token Anda Adalah: $_token');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +54,9 @@ class WelcomeScreen extends StatelessWidget {
           const SizedBox(
             height: 100,
           ),
-          const Text(
-            'Selamat Datang',
-            style: TextStyle(fontSize: 30, color: Colors.white),
+          Text(
+            'Selamat Datang $_name',
+            style: const TextStyle(fontSize: 30, color: Colors.white),
           ),
           const SizedBox(
             height: 30,

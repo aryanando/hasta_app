@@ -39,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       SharedPreferences.setMockInitialValues({});
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token['token']);
+      await prefs.setString('name', user['name']);
 
       //berpindah halaman
       // debugPrint(token['token']);

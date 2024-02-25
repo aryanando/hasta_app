@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hasta_app/splash_screen.dart';
 
 import 'welcome_screen.dart';
 void main() {
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         fontFamily: ('inter'),
         useMaterial3: true,
       ),
-      home:const WelcomeScreen(),
+      home:const SplashScreen(),
     );
   }
 }

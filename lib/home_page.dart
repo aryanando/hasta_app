@@ -2,6 +2,7 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:hasta_app/components/image_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +25,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // Variables to store the shared preference data
+  late String _token;
+
+  // Method to load the shared preference data
+  void _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _token = prefs.getString('token') ?? '';
+    });
+    print('Token Anda Adalah: $_token');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
   var now = DateTime.now();
   var formatter = DateFormat('yyyy-MM-dd');
   late String formattedDate = formatter.format(now);
