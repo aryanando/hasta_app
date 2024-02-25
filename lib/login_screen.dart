@@ -50,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
             id: user['id'],
             name: user['name'],
             email: user['email'],
-            token: token['token'],
           ),
         ),
         (route) => false,

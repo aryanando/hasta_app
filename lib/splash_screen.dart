@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hasta_app/home_page.dart';
+import 'package:hasta_app/welcome_screen.dart';
+import 'package:http/http.dart' as http;
 
-import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,20 +29,72 @@ class _SplashScreenState extends State<SplashScreen>
       _tokenSecure = tokenSecure;
     });
     // print('Token Anda Adalah: $_token');
-    _checkToken(_tokenSecure);
+    if (_tokenSecure != "") {
+      _checkToken(_tokenSecure);
+    } else {
+      print(_tokenSecure);
+      if (!context.mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const WelcomeScreen(),
+        ),
+        (route) => false,
+      );
+    }
   }
 
-  void _checkToken(String? myToken){
-    if(myToken != Null){
+  void _checkToken(String? myToken) {
+    if (myToken != "") {
       print('Token Anda Adalah Secure: $myToken');
       getUserData(myToken);
+    } else {
+      if (!context.mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const WelcomeScreen(),
+        ),
+        (route) => false,
+      );
     }
   }
 
   Future<void> getUserData(String? token) async {
-    const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/login';
-  }
+    const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/me';
+    final response = await http.get(Uri.parse(apiUrl), headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
 
+    inspect(response.statusCode);
+
+    if (response.statusCode == 200) {
+      //mengabil data user
+      final user = json.decode(response.body)['data'];
+
+      //menyimpan data token
+      await storage.write(key: 'data', value: response.body);
+
+      //berpindah halaman
+      if (!context.mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(
+            id: user['id'],
+            name: user['name'],
+            email: user['email'],
+          ),
+        ),
+        (route) => false,
+      );
+    } else {
+      debugPrint(apiUrl);
+      print(response.statusCode);
+    }
+  }
 
   @override
   void initState() {
@@ -47,13 +104,16 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..addListener(() {
-        
         setState(() {});
       });
     controller.repeat(reverse: false);
     super.initState();
-    _loadPreferences();
-    
+    Future.delayed(
+      Duration(seconds: 3),
+      () {
+        _loadPreferences();
+      },
+    );
   }
 
   @override

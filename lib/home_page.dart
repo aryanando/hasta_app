@@ -12,14 +12,13 @@ class HomePage extends StatefulWidget {
   final int id;
   final String name;
   final String email;
-  final String token;
 
   const HomePage(
       {super.key,
       required this.id,
       required this.name,
       required this.email,
-      required this.token});
+      });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,17 +26,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Variables to store the shared preference data
-  String? _token;
   String? _tokenSecure;
 
   final storage = const FlutterSecureStorage();
 
   // Method to load the shared preference data
   void _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     setState(() {
-      _token = prefs.getString('token') ?? '';
       _tokenSecure = tokenSecure;
     });
     // print('Token Anda Adalah: $_token');
@@ -58,11 +54,12 @@ class _HomePageState extends State<HomePage> {
   Future<void> handleLogout(String token) async {
     const url = '${const String.fromEnvironment('devUrl')}api/v1/logout';
     final headers = {
-      'Authorization': 'Bearer ${widget.token}',
+      'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     };
 
     final response = await http.post(Uri.parse(url), headers: headers);
+    await storage.deleteAll();
 
     print(response.body);
     if (!context.mounted) return;
@@ -123,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                             color: const Color(0xffdcf2f1),
                             borderRadius: BorderRadius.circular(12)),
                         child: IconButton(
-                          onPressed: () => handleLogout(widget.token),
+                          onPressed: () => handleLogout(_tokenSecure!),
                           icon: const Icon(Icons.logout),
                         ),
                       )

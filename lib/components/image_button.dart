@@ -14,8 +14,8 @@ class ImageButton extends StatelessWidget {
       decoration: BoxDecoration(
           color: const Color(0xffdcf2f1),
           borderRadius: BorderRadius.circular(12)),
-      padding: const EdgeInsets.all(12),
-      child: const Icon(Icons.fact_check_rounded),
+      padding: const EdgeInsets.all(10),
+      child: const Icon(Icons.fact_check_rounded, size: 32,),
     );
   }
 }
