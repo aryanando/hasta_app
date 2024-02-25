@@ -1,6 +1,7 @@
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/components/image_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
@@ -26,16 +27,24 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Variables to store the shared preference data
-  late String _token;
+  String? _token;
+  String? _tokenSecure;
+
+  final storage = const FlutterSecureStorage();
 
   // Method to load the shared preference data
   void _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
+    final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     setState(() {
       _token = prefs.getString('token') ?? '';
+      _tokenSecure = tokenSecure;
     });
-    print('Token Anda Adalah: $_token');
+    // print('Token Anda Adalah: $_token');
+    print('Token Anda Adalah Secure: $_tokenSecure');
   }
+
+  
 
   @override
   void initState() {

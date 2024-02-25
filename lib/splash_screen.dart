@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hasta_app/reg_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'login_screen.dart';
 
@@ -11,29 +10,57 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
+  String? _tokenSecure;
 
-  // Variables to store the shared preference data
-  String? _token;
-  String? _name;
+  final storage = const FlutterSecureStorage();
+  late AnimationController controller;
 
   // Method to load the shared preference data
   void _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
+    final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     setState(() {
-      _token = prefs.getString('token') ?? '';
-      _name = prefs.getString('name') ?? '';
+      _tokenSecure = tokenSecure;
     });
-    print('Token Anda Adalah: $_token');
+    // print('Token Anda Adalah: $_token');
+    _checkToken(_tokenSecure);
   }
+
+  void _checkToken(String? myToken){
+    if(myToken != Null){
+      print('Token Anda Adalah Secure: $myToken');
+      getUserData(myToken);
+    }
+  }
+
+  Future<void> getUserData(String? token) async {
+    const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/login';
+  }
+
 
   @override
   void initState() {
+    controller = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..addListener(() {
+        
+        setState(() {});
+      });
+    controller.repeat(reverse: false);
     super.initState();
     _loadPreferences();
+    
   }
 
-  
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,81 +73,22 @@ class _SplashScreenState extends State<SplashScreen> {
           Color(0xff7fc7d9),
           Color(0xff365486),
         ])),
-        child: Column(children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 150.0),
-            child: Image(image: AssetImage('assets/logo.png')),
-          ),
-          const SizedBox(
-            height: 100,
-          ),
-          Text(
-            'Selamat Datang $_name',
-            style: const TextStyle(fontSize: 30, color: Colors.white),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()));
-            },
-            child: Container(
-              height: 53,
-              width: 320,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.white),
-              ),
-              child: const Center(
-                child: Text(
-                  'Masuk',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ),
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(top: 150.0),
+              child: Image(image: AssetImage('assets/logo.png')),
             ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const RegScreen()));
-            },
-            child: Container(
-              height: 53,
-              width: 320,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.white),
-              ),
-              child: const Center(
-                child: Text(
-                  'Daftar',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-              ),
+            const SizedBox(
+              height: 100,
             ),
-          ),
-          // const Spacer(),
-          // const Text(
-          //   'Login with Social Media',
-          //   style: TextStyle(fontSize: 17, color: Colors.white),
-          // ), //
-          // const SizedBox(
-          //   height: 12,
-          // ),
-          // const Image(image: AssetImage('assets/social.png'))
-        ]),
+            CircularProgressIndicator(
+              color: Colors.white,
+              value: controller.value,
+              semanticsLabel: 'Circular progress indicator',
+            ),
+          ],
+        ),
       ),
     );
   }

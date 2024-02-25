@@ -3,9 +3,9 @@ import 'package:hasta_app/home_page.dart';
 // import 'package:hasta_app/WelcomeScreen.dart';
 import 'package:hasta_app/reg_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,6 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
+
+  // Create storage
+  final storage = new FlutterSecureStorage();
 
   Future<void> login(String email, String password) async {
     const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/login';
@@ -36,16 +39,10 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = json.decode(response.body)['user'];
 
       //menyimpan data token
-      SharedPreferences.setMockInitialValues({});
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token['token']);
-      await prefs.setString('name', user['name']);
+      await storage.write(key: 'tokenSecure', value: token['token']);
 
       //berpindah halaman
-      // debugPrint(token['token']);
       if (!context.mounted) return;
-      // Navigator.push(context, MaterialPageRoute(builder: (context) => const RegScreen()));
-      //berpindah halaman
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
