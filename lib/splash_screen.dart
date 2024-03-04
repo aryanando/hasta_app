@@ -4,9 +4,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/home_page.dart';
+import 'package:hasta_app/login_screen.dart';
 import 'package:hasta_app/welcome_screen.dart';
 import 'package:http/http.dart' as http;
-
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -62,37 +62,48 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> getUserData(String? token) async {
     const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/me';
-    final response = await http.get(Uri.parse(apiUrl), headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    });
+    try {
+      final response = await http.get(Uri.parse(apiUrl), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
 
-    inspect(response.statusCode);
+      inspect(response.statusCode);
 
-    if (response.statusCode == 200) {
-      //mengabil data user
-      final user = json.decode(response.body)['data'];
+      if (response.statusCode == 200) {
+        //mengabil data user
+        final user = json.decode(response.body)['data'];
 
-      //menyimpan data token
-      await storage.write(key: 'data', value: response.body);
+        //menyimpan data token
+        await storage.write(key: 'data', value: response.body);
 
-      //berpindah halaman
+        //berpindah halaman
+        if (!context.mounted) return;
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              id: user['id'],
+              name: user['name'],
+              email: user['email'],
+            ),
+          ),
+          (route) => false,
+        );
+      } else {
+        debugPrint(apiUrl);
+        print(response.statusCode);
+      }
+    } catch (e) {
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(
-            id: user['id'],
-            name: user['name'],
-            email: user['email'],
-          ),
+          builder: (context) => LoginScreen(),
         ),
         (route) => false,
       );
-    } else {
-      debugPrint(apiUrl);
-      print(response.statusCode);
     }
   }
 
