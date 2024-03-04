@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class ImageButton extends StatelessWidget {
   final String imagePath;
+  final IconData icons;
 
   const ImageButton({
     Key? key,
     required this.imagePath,
+    required this.icons,
   }) : super(key: key);
 
   @override
@@ -15,7 +17,7 @@ class ImageButton extends StatelessWidget {
           color: const Color(0xffdcf2f1),
           borderRadius: BorderRadius.circular(12)),
       padding: const EdgeInsets.all(10),
-      child: const Icon(Icons.fact_check_rounded, size: 32,),
+      child: Icon(icons, size: 40,),
     );
   }
 }

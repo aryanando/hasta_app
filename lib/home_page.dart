@@ -172,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Column(
                         children: [
-                          ImageButton(imagePath: "Blabla"),
+                          ImageButton(imagePath: "Blabla", icons: Icons.fact_check_rounded),
                           Text(
                             'Absensi',
                             style: TextStyle(fontSize: 12),
@@ -181,27 +181,27 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Column(
                         children: [
-                          ImageButton(imagePath: "Blabla"),
+                          ImageButton(imagePath: "Blabla", icons: Icons.bed),
                           Text(
-                            'Absensi',
+                            'Ranap',
                             style: TextStyle(fontSize: 12),
                           )
                         ],
                       ),
                       Column(
                         children: [
-                          ImageButton(imagePath: "Blabla"),
+                          ImageButton(imagePath: "Blabla", icons: Icons.money),
                           Text(
-                            'Absensi',
+                            'Slip',
                             style: TextStyle(fontSize: 12),
                           )
                         ],
                       ),
                       Column(
                         children: [
-                          ImageButton(imagePath: "Blabla"),
+                          ImageButton(imagePath: "Blabla", icons: Icons.health_and_safety_rounded),
                           Text(
-                            'Absensi',
+                            'Ralan',
                             style: TextStyle(fontSize: 12),
                           )
                         ],
