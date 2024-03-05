@@ -94,16 +94,26 @@ class _SplashScreenState extends State<SplashScreen>
       } else {
         debugPrint(apiUrl);
         print(response.statusCode);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ),
+          (route) => false,
+        );
       }
     } catch (e) {
-      if (!context.mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginScreen(),
-        ),
-        (route) => false,
-      );
+      if (!context.mounted) {
+        return;
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ),
+          (route) => false,
+        );
+      }
     }
   }
 

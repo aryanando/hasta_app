@@ -3,7 +3,6 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/components/image_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -13,12 +12,12 @@ class HomePage extends StatefulWidget {
   final String name;
   final String email;
 
-  const HomePage(
-      {super.key,
-      required this.id,
-      required this.name,
-      required this.email,
-      });
+  const HomePage({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.email,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -39,8 +38,6 @@ class _HomePageState extends State<HomePage> {
     // print('Token Anda Adalah: $_token');
     print('Token Anda Adalah Secure: $_tokenSecure');
   }
-
-  
 
   @override
   void initState() {
@@ -73,16 +70,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff7fc7d9),
-      // appBar: AppBar(
-      //   title: const Text('Home'),
-      //   actions: [
-      //     IconButton(
-      //       onPressed: () => handleLogout(widget.token),
-      //       icon: const Icon(Icons.logout),
-      //     ),
-      //   ],
-      // ),
+      backgroundColor: const Color(0xff7fc7d9),
       body: SafeArea(
         child: Column(
           children: [
@@ -172,7 +160,11 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Column(
                         children: [
-                          ImageButton(imagePath: "Blabla", icons: Icons.fact_check_rounded),
+                          ImageButton(
+                            imagePath: "Blabla",
+                            icons: Icons.fact_check_rounded,
+                            pageRoute: "/absensi",
+                          ),
                           Text(
                             'Absensi',
                             style: TextStyle(fontSize: 12),
@@ -181,7 +173,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Column(
                         children: [
-                          ImageButton(imagePath: "Blabla", icons: Icons.bed),
+                          ImageButton(
+                            imagePath: "Blabla",
+                            icons: Icons.bed,
+                            pageRoute: "/ranap",
+                          ),
                           Text(
                             'Ranap',
                             style: TextStyle(fontSize: 12),
@@ -190,7 +186,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Column(
                         children: [
-                          ImageButton(imagePath: "Blabla", icons: Icons.money),
+                          ImageButton(
+                            imagePath: "Blabla",
+                            icons: Icons.money,
+                            pageRoute: "/gaji",
+                          ),
                           Text(
                             'Slip',
                             style: TextStyle(fontSize: 12),
@@ -199,7 +199,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Column(
                         children: [
-                          ImageButton(imagePath: "Blabla", icons: Icons.health_and_safety_rounded),
+                          ImageButton(
+                            imagePath: "Blabla",
+                            icons: Icons.health_and_safety_rounded,
+                            pageRoute: "/ralan",
+                          ),
                           Text(
                             'Ralan',
                             style: TextStyle(fontSize: 12),
@@ -220,10 +224,10 @@ class _HomePageState extends State<HomePage> {
                     topLeft: Radius.circular(50),
                     topRight: Radius.circular(50)),
                 child: Container(
-                  color: Color(0xffdcf2f1),
+                  color: const Color(0xffdcf2f1),
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(30.0),
+                      padding: const EdgeInsets.all(30.0),
                       child: Column(
                         children: [
                           // Header Pengumuman
@@ -239,7 +243,9 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
 
-                          SizedBox(height: 20,),
+                          const SizedBox(
+                            height: 20,
+                          ),
 
                           // List Penumuman
                           Expanded(
@@ -248,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                               child: ListView(
                                 scrollDirection: Axis.vertical,
                                 shrinkWrap: true,
-                                children: <Widget>[
+                                children: const <Widget>[
                                   Card(
                                     color: Colors.white,
                                     child: ListTile(
@@ -299,7 +305,6 @@ class _HomePageState extends State<HomePage> {
                                       // trailing: Icon(Icons.more_vert),
                                     ),
                                   ),
-                              
                                 ],
                               ),
                             ),
@@ -314,7 +319,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-
       bottomNavigationBar: CurvedNavigationBar(
         index: 0,
         items: const [
@@ -337,7 +341,7 @@ class _HomePageState extends State<HomePage> {
         ],
         color: const Color(0xff7fc7d9),
         buttonBackgroundColor: const Color(0xff7fc7d9),
-        backgroundColor: Color(0xffdcf2f1),
+        backgroundColor: const Color(0xffdcf2f1),
         animationCurve: Curves.easeInOut,
         animationDuration: const Duration(milliseconds: 600),
         onTap: (index) {

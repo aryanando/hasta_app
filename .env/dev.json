@@ -3,5 +3,5 @@
     "clientid": "",
     "clientsecret": "",
     "callbackUrl": "",
-    "devUrl": "http://192.168.5.9:8001/"
+    "devUrl": "http://192.168.5.9:8000/"
 }
