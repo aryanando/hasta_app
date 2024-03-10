@@ -78,9 +78,6 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
         //mengabil data user
         final dataRanap = json.decode(response.body)['data'];
 
-        //berpindah halaman
-        // Map<String, dynamic> dataPasien = json.decode(dataRanap);
-
         setState(() {
           for (var pasien in dataRanap) {
             pasiens.add(Pasien(
@@ -98,19 +95,6 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
       print("Error");
     }
   }
-
-  // final Map<String, List<Pasien>> mapOfActors = {
-  //   'test 1': [
-  //     Pasien(room: 47, name: 'Leonardo', alamat: 'DiCaprio'),
-  //     Pasien(room: 66, name: 'Denzel', alamat: 'Washington'),
-  //     Pasien(room: 49, name: 'Ben', alamat: 'Affleck'),
-  //   ],
-  //   'test 2': [
-  //     Pasien(room: 58, name: 'Johnny', alamat: 'Depp'),
-  //     Pasien(room: 78, name: 'Robert', alamat: 'De Niro'),
-  //     Pasien(room: 44, name: 'Tom', alamat: 'Hardy'),
-  //   ]
-  // };
 
   @override
   void initState() {

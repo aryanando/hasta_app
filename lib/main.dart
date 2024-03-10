@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const RegScreen(),
-        '/absensi': (context) => const AbsensiPage(),
+        '/absensi-cam': (context) => const AbsensiPage(),
         '/ranap': (context) => const RanapPage(),
         '/gaji': (context) => const GajiPage(),
         '/ralan': (context) => const RalanPage(),

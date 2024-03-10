@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hasta_app/components/absensi_notif_card.dart';
 import 'package:hasta_app/components/image_button.dart';
 import 'login_screen.dart';
 import 'package:intl/intl.dart';
@@ -26,6 +29,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // Variables to store the shared preference data
   String? _tokenSecure;
+  int _cardColor = 0xffffdee4;
+  String _cardTittle = "";
+  String _cardMessage = "";
 
   final storage = const FlutterSecureStorage();
 
@@ -37,17 +43,22 @@ class _HomePageState extends State<HomePage> {
     });
     // print('Token Anda Adalah: $_token');
     print('Token Anda Adalah Secure: $_tokenSecure');
+    getAbsensiData(_tokenSecure);
   }
 
   @override
   void initState() {
     super.initState();
     _loadPreferences();
+    _cardColor = (0xffffdee4);
+    _cardTittle = "Anda Belum Absen";
+    _cardMessage = "Ketuk disini untuk scan absensi datang";
   }
 
   var now = DateTime.now();
   var formatter = DateFormat('yyyy-MM-dd');
   late String formattedDate = formatter.format(now);
+
   Future<void> handleLogout(String token) async {
     const url = '${const String.fromEnvironment('devUrl')}api/v1/logout';
     final headers = {
@@ -65,6 +76,45 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => const LoginScreen()),
       (route) => false,
     );
+  }
+
+  Future<void> getAbsensiData(String? myToken) async {
+    const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/absensi';
+    try {
+      final response = await http.get(Uri.parse(apiUrl), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $myToken',
+      });
+
+      // inspect(response.statusCode);
+
+      if (response.statusCode == 200) {
+        //mengabil data user
+        final dataAbsensiHariIni = json.decode(response.body)['data'];
+        if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
+          setState(() {
+            _cardColor = 0xffa4ffa4;
+            _cardTittle = "Anda Telah Checkin";
+            _cardMessage = "Untuk pulang silahkan ketuk notif ini sekali lagi";
+          });
+          if (dataAbsensiHariIni['absensi_hari_ini'][0]['check_out'] != null) {
+            _cardColor = 0xff91d2ff;
+            _cardTittle = "Anda Telah Checkout";
+            _cardMessage = "Selamat sore, hati-hati dijalan, sampai jumpa esok";
+          }
+        }
+
+        print(dataAbsensiHariIni);
+      } else {
+        debugPrint(apiUrl);
+        print(response.statusCode);
+      }
+    } catch (e) {
+      if (!context.mounted) {
+        return;
+      } else {}
+    }
   }
 
   @override
@@ -120,15 +170,17 @@ class _HomePageState extends State<HomePage> {
                   ListView(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
-                    children: const <Widget>[
-                      Card(
-                        color: Color(0xffffdee4),
-                        child: ListTile(
-                          leading: Icon(Icons.close),
-                          title: Text('Anda Belum Absen'),
-                          subtitle: Text('Silahkan segera melakukan absensi'),
-                          trailing: Icon(Icons.more_vert),
-                        ),
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          await Navigator.pushNamed(
+                            context,
+                            '/absensi-cam',
+                          ).then((value) {
+                            getAbsensiData(_tokenSecure);
+                          });
+                        },
+                        child: AbsensiNotifCard(cardColor: _cardColor, cardTittle: _cardTittle, cardMessage: _cardMessage),
                       ),
                     ],
                   ),
