@@ -180,7 +180,10 @@ class _HomePageState extends State<HomePage> {
                             getAbsensiData(_tokenSecure);
                           });
                         },
-                        child: AbsensiNotifCard(cardColor: _cardColor, cardTittle: _cardTittle, cardMessage: _cardMessage),
+                        child: AbsensiNotifCard(
+                            cardColor: _cardColor,
+                            cardTittle: _cardTittle,
+                            cardMessage: _cardMessage),
                       ),
                     ],
                   ),
@@ -215,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                           ImageButton(
                             imagePath: "Blabla",
                             icons: Icons.fact_check_rounded,
-                            pageRoute: "/absensi",
+                            pageRoute: "/absensi-cam",
                           ),
                           Text(
                             'Absensi',
