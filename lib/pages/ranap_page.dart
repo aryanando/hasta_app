@@ -46,7 +46,7 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
 
   void _checkToken(String? myToken) {
     if (myToken != "") {
-      print('Token Anda Adalah Secure: $myToken');
+      // print('Token Anda Adalah Secure: $myToken');
       getUserData(myToken);
     } else {
       if (!context.mounted) return;
