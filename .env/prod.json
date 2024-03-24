@@ -1,0 +1,7 @@
+{
+    "env:": "prod",
+    "clientid": "",
+    "clientsecret": "",
+    "callbackUrl": "",
+    "devUrl": "https://hasta-api.aryanando.my.id/"
+}
