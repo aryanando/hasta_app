@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   int _cardColor = 0xffffdee4;
   String _cardTittle = "";
   String _cardMessage = "";
+  String _absensiState = "/absensi-cam";
 
   final storage = const FlutterSecureStorage();
 
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       _tokenSecure = tokenSecure;
     });
     // print('Token Anda Adalah: $_token');
-    print('Token Anda Adalah Secure: $_tokenSecure');
+    // print('Token Anda Adalah Secure: $_tokenSecure');
     getAbsensiData(_tokenSecure);
   }
 
@@ -53,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     _cardColor = (0xffffdee4);
     _cardTittle = "Anda Belum Absen";
     _cardMessage = "Ketuk disini untuk scan absensi datang";
+    _absensiState = "/absensi-cam";
   }
 
   var now = DateTime.now();
@@ -92,12 +94,17 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         //mengabil data user
         final dataAbsensiHariIni = json.decode(response.body)['data'];
-        if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
-          setState(() {
-            _cardColor = 0xffa4ffa4;
-            _cardTittle = "Anda Telah Checkin";
-            _cardMessage = "Untuk pulang silahkan ketuk notif ini sekali lagi";
-          });
+        print(dataAbsensiHariIni);
+        if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
+          if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
+            setState(() {
+              _cardColor = 0xffa4ffa4;
+              _cardTittle = "Anda Telah Checkin";
+              _cardMessage =
+                  "Untuk pulang silahkan ketuk notif ini sekali lagi";
+              _absensiState = "/absensi-pulang-cam";
+            });
+          }
           if (dataAbsensiHariIni['absensi_hari_ini'][0]['check_out'] != null) {
             _cardColor = 0xff91d2ff;
             _cardTittle = "Anda Telah Checkout";
@@ -105,7 +112,7 @@ class _HomePageState extends State<HomePage> {
           }
         }
 
-        print(dataAbsensiHariIni);
+        print(json.decode(response.body));
       } else {
         debugPrint(apiUrl);
         print(response.statusCode);
@@ -175,12 +182,15 @@ class _HomePageState extends State<HomePage> {
                         onTap: () async {
                           await Navigator.pushNamed(
                             context,
-                            '/absensi-cam',
+                            _absensiState,
                           ).then((value) {
                             getAbsensiData(_tokenSecure);
                           });
                         },
-                        child: AbsensiNotifCard(cardColor: _cardColor, cardTittle: _cardTittle, cardMessage: _cardMessage),
+                        child: AbsensiNotifCard(
+                            cardColor: _cardColor,
+                            cardTittle: _cardTittle,
+                            cardMessage: _cardMessage),
                       ),
                     ],
                   ),
@@ -215,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                           ImageButton(
                             imagePath: "Blabla",
                             icons: Icons.fact_check_rounded,
-                            pageRoute: "/absensi",
+                            pageRoute: "/absensi-cam",
                           ),
                           Text(
                             'Absensi',

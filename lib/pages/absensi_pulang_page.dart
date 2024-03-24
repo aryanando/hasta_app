@@ -9,20 +9,21 @@ import 'package:hasta_app/welcome_screen.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
 
-class AbsensiScanPage extends StatefulWidget {
-  const AbsensiScanPage({super.key});
+class AbsensiPulangScanPage extends StatefulWidget {
+  const AbsensiPulangScanPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _AbsensiScanPageState();
+  State<StatefulWidget> createState() => _AbsensiPulangPageState();
 }
 
-class _AbsensiScanPageState extends State<AbsensiScanPage> {
+class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   String? _tokenSecure;
   int _isValidQr = 0;
   Widget _backButton = const Icon(Icons.cancel, size: 30);
+  int _idAbsensi = 0;
 
   final storage = const FlutterSecureStorage();
 
@@ -60,6 +61,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       // print('Token Anda Adalah Secure: $myToken');
       // _absensiHandle(myToken);
       // absensiHandle(myToken);
+      getAbsensiData(myToken);
     } else {
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -77,11 +79,10 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       String apiUrl =
           '${const String.fromEnvironment('devUrl')}api/v1/absensi/$absensiToken';
       try {
-        final response = await http.post(
+        final response = await http.put(
           Uri.parse(apiUrl),
           body: jsonEncode({
-            'shift_id': 2,
-            'user_id': 9,
+            'absens_id': _idAbsensi,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -111,6 +112,41 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       } catch (e) {
         debugPrint(e.toString());
       }
+    }
+  }
+
+  Future<void> getAbsensiData(String? myToken) async {
+    const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/absensi';
+    try {
+      final response = await http.get(Uri.parse(apiUrl), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $myToken',
+      });
+
+      // inspect(response.statusCode);
+
+      if (response.statusCode == 200) {
+        //mengabil data user
+        final dataAbsensiHariIni = json.decode(response.body)['data'];
+        print(dataAbsensiHariIni);
+        if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
+          if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
+            setState(() {
+              _idAbsensi = dataAbsensiHariIni['absensi_hari_ini'][0]['id'];
+            });
+          }
+        }
+
+        print(json.decode(response.body));
+      } else {
+        debugPrint(apiUrl);
+        print(response.statusCode);
+      }
+    } catch (e) {
+      if (!context.mounted) {
+        return;
+      } else {}
     }
   }
 
