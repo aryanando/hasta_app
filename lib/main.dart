@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hasta_app/home_page.dart';
 import 'package:hasta_app/login_screen.dart';
 import 'package:hasta_app/pages/absensi_page.dart';
 import 'package:hasta_app/pages/absensi_pulang_page.dart';
 import 'package:hasta_app/pages/gaji_page.dart';
+import 'package:hasta_app/pages/jadwal_page.dart';
 import 'package:hasta_app/pages/ralan_page.dart';
 import 'package:hasta_app/pages/ranap_page.dart';
 import 'package:hasta_app/reg_screen.dart';
 import 'package:hasta_app/splash_screen.dart';
 
-import 'welcome_screen.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -40,6 +39,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const RegScreen(),
         '/absensi-cam': (context) => const AbsensiScanPage(),
         '/absensi-pulang-cam': (context) => const AbsensiPulangScanPage(),
+        '/jadwal': (context) => const JadwalPage(),
         '/ranap': (context) => const RanapPage(),
         '/gaji': (context) => const GajiPage(),
         '/ralan': (context) => const RalanPage(),

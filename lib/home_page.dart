@@ -109,7 +109,15 @@ class _HomePageState extends State<HomePage> {
             _cardColor = 0xff91d2ff;
             _cardTittle = "Anda Telah Checkout";
             _cardMessage = "Selamat sore, hati-hati dijalan, sampai jumpa esok";
+            _absensiState = "/jadwal";
           }
+        }else {
+          setState(() {
+            _cardColor = 0xffdddddd;
+            _cardTittle = "Anda sedang Off (Libur)";
+            _cardMessage = "Jika ada kesalahan silahkan hubungi Karu, selamat berlibur";
+            _absensiState = "/jadwal";
+          });
         }
 
         print(json.decode(response.body));
@@ -225,10 +233,10 @@ class _HomePageState extends State<HomePage> {
                           ImageButton(
                             imagePath: "Blabla",
                             icons: Icons.fact_check_rounded,
-                            pageRoute: "/absensi-cam",
+                            pageRoute: "/jadwal",
                           ),
                           Text(
-                            'Absensi',
+                            'Jadwal',
                             style: TextStyle(fontSize: 12),
                           )
                         ],
@@ -321,49 +329,9 @@ class _HomePageState extends State<HomePage> {
                                     color: Colors.white,
                                     child: ListTile(
                                       // leading: Icon(Icons.close),
-                                      title: Text('Rapat Besar 23-02-20s4'),
+                                      title: Text('Beta Tester Release'),
                                       subtitle:
-                                          Text('Silahkan datang tepat waktu'),
-                                      // trailing: Icon(Icons.more_vert),
-                                    ),
-                                  ),
-                                  Card(
-                                    color: Colors.white,
-                                    child: ListTile(
-                                      // leading: Icon(Icons.close),
-                                      title: Text('Rapat Besar 23-02-20s4'),
-                                      subtitle:
-                                          Text('Silahkan datang tepat waktu'),
-                                      // trailing: Icon(Icons.more_vert),
-                                    ),
-                                  ),
-                                  Card(
-                                    color: Colors.white,
-                                    child: ListTile(
-                                      // leading: Icon(Icons.close),
-                                      title: Text('Rapat Besar 23-02-20s4'),
-                                      subtitle:
-                                          Text('Silahkan datang tepat waktu'),
-                                      // trailing: Icon(Icons.more_vert),
-                                    ),
-                                  ),
-                                  Card(
-                                    color: Colors.white,
-                                    child: ListTile(
-                                      // leading: Icon(Icons.close),
-                                      title: Text('Rapat Besar 23-02-20s4'),
-                                      subtitle:
-                                          Text('Silahkan datang tepat waktu'),
-                                      // trailing: Icon(Icons.more_vert),
-                                    ),
-                                  ),
-                                  Card(
-                                    color: Colors.white,
-                                    child: ListTile(
-                                      // leading: Icon(Icons.close),
-                                      title: Text('Rapat Besar 23-02-20s4'),
-                                      subtitle:
-                                          Text('Silahkan datang tepat waktu'),
+                                          Text('Anda beruntung menjadi bagian pengembangan APP Ini'),
                                       // trailing: Icon(Icons.more_vert),
                                     ),
                                   ),
@@ -387,14 +355,6 @@ class _HomePageState extends State<HomePage> {
           CurvedNavigationBarItem(
             child: Icon(Icons.home_outlined),
             label: 'Beranda',
-          ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.chat_bubble_outline),
-            label: 'Chat',
-          ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.newspaper),
-            label: 'Feed',
           ),
           CurvedNavigationBarItem(
             child: Icon(Icons.perm_identity),

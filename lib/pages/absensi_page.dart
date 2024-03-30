@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/welcome_screen.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+// import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AbsensiScanPage extends StatefulWidget {
   const AbsensiScanPage({super.key});
@@ -178,6 +179,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) {
+      print(scanData.code);
       _absensiHandle(_tokenSecure, scanData.code);
       controller?.dispose();
     });

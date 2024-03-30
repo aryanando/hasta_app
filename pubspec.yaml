@@ -44,6 +44,7 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   qr_code_scanner: ^1.0.1
   searchable_listview: ^2.10.2
+  mobile_scanner: ^4.0.1
 
 dev_dependencies:
   flutter_test:
