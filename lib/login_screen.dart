@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   // Create storage
-  final storage = new FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
 
   Future<void> login(String email, String password) async {
     const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/login';
@@ -40,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       //menyimpan data token
       await storage.write(key: 'tokenSecure', value: token['token']);
+      await storage.write(key: 'userData', value: jsonEncode(user));
 
       //berpindah halaman
       if (!context.mounted) return;

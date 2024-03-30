@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   // Method to load the shared preference data
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
+    final userData = await storage.read(key: 'userData') ?? "";
     setState(() {
       _tokenSecure = tokenSecure;
     });
@@ -95,6 +96,7 @@ class _HomePageState extends State<HomePage> {
         //mengabil data user
         final dataAbsensiHariIni = json.decode(response.body)['data'];
         print(dataAbsensiHariIni);
+        await storage.write(key: 'shiftID', value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
         if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
           if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
             setState(() {

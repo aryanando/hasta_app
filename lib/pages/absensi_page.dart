@@ -1,14 +1,11 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/welcome_screen.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
-// import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AbsensiScanPage extends StatefulWidget {
   const AbsensiScanPage({super.key});
@@ -18,14 +15,14 @@ class AbsensiScanPage extends StatefulWidget {
 }
 
 class _AbsensiScanPageState extends State<AbsensiScanPage> {
-  Barcode? result;
-  QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   String? _tokenSecure;
   int _isValidQr = 0;
-  Widget _backButton = const Icon(Icons.cancel, size: 30);
-
+  MobileScannerController cameraController = MobileScannerController();
   final storage = const FlutterSecureStorage();
+  Map _userData = {};
+  Map _shiftID = {};
+  
 
   @override
   void initState() {
@@ -33,18 +30,26 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
     _isValidQr = 0;
     _loadPreferences();
     super.initState();
+    cameraController = MobileScannerController();
   }
 
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
+    final userData = await storage.read(key: 'userData') ?? "{}";
+    final shiftID = await storage.read(key: 'shiftID') ?? "{}";
+
     setState(() {
+      cameraController.start();
+      _userData = jsonDecode(userData);
+      _shiftID = jsonDecode(shiftID);
       _tokenSecure = tokenSecure;
     });
+      
     // print('Token Anda Adalah: $_tokenSecure');
     if (_tokenSecure != "") {
       _checkToken(_tokenSecure);
     } else {
-      print(_tokenSecure);
+      
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -61,6 +66,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       // print('Token Anda Adalah Secure: $myToken');
       // _absensiHandle(myToken);
       // absensiHandle(myToken);
+      print('asdd ${_shiftID['id']}' );
     } else {
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -81,8 +87,8 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
         final response = await http.post(
           Uri.parse(apiUrl),
           body: jsonEncode({
-            'shift_id': 2,
-            'user_id': 9,
+            'shift_id': _shiftID['id'],
+            'user_id': _userData['id'],
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -94,17 +100,11 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
         if (response.statusCode == 200) {
           //menyimpan data token
           print(response.body);
-          await controller?.pauseCamera();
 
           setState(() {
             _isValidQr = 1;
-            _backButton = IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.check_box_rounded));
+            cameraController.stop();
           });
-          // Navigator.pop(context);
-
-          //berpindah halaman
         } else {
           debugPrint(apiUrl);
           print(response.statusCode);
@@ -115,88 +115,59 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
     }
   }
 
-  // In order to get hot reload to work we need to pause the camera if the platform
-  // is android, or resume the camera if the platform is iOS.
-  @override
-  void reassemble() {
-    super.reassemble();
-    if (Platform.isAndroid) {
-      controller!.pauseCamera();
-    }
-    controller!.resumeCamera();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Scan QR Absensi"),
-        backgroundColor: const Color(0xff7fc7d9),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(flex: 4, child: _buildQrView(context)),
-          Expanded(
-            flex: 1,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  _backButton,
-                ],
+        appBar: AppBar(
+          title: const Text('Mobile Scanner'),
+          actions: [
+            IconButton(
+              color: Colors.white,
+              icon: ValueListenableBuilder(
+                valueListenable: cameraController.torchState,
+                builder: (context, state, child) {
+                  switch (state as TorchState) {
+                    case TorchState.off:
+                      return const Icon(Icons.flash_off, color: Colors.grey);
+                    case TorchState.on:
+                      return const Icon(Icons.flash_on, color: Colors.yellow);
+                  }
+                },
               ),
+              iconSize: 32.0,
+              onPressed: () => cameraController.toggleTorch(),
             ),
-          )
-        ],
-      ),
+            IconButton(
+              color: Colors.white,
+              icon: ValueListenableBuilder(
+                valueListenable: cameraController.cameraFacingState,
+                builder: (context, state, child) {
+                  switch (state as CameraFacing) {
+                    case CameraFacing.front:
+                      return const Icon(Icons.camera_front);
+                    case CameraFacing.back:
+                      return const Icon(Icons.camera_rear);
+                  }
+                },
+              ),
+              iconSize: 32.0,
+              onPressed: () => cameraController.switchCamera(),
+            ),
+          ],
+        ),
+        body: MobileScanner(
+          // fit: BoxFit.contain,
+          controller: cameraController,
+          onDetect: (capture) {
+            final List<Barcode> barcodes = capture.barcodes;
+            final Uint8List? image = capture.image;
+            for (final barcode in barcodes) {
+              debugPrint('Barcode found! ${barcode.rawValue}');
+              _absensiHandle(_tokenSecure, barcode.rawValue);
+            }
+          },
+        ),
     );
   }
 
-  Widget _buildQrView(BuildContext context) {
-    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
-    var scanArea = (MediaQuery.of(context).size.width < 400 ||
-            MediaQuery.of(context).size.height < 400)
-        ? 150.0
-        : 300.0;
-    // To ensure the Scanner view is properly sizes after rotation
-    // we need to listen for Flutter SizeChanged notification and update controller
-    return QRView(
-      key: qrKey,
-      onQRViewCreated: _onQRViewCreated,
-      overlay: QrScannerOverlayShape(
-          borderColor: Colors.red,
-          borderRadius: 10,
-          borderLength: 30,
-          borderWidth: 10,
-          cutOutSize: scanArea),
-      onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
-    );
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    setState(() {
-      this.controller = controller;
-    });
-    controller.scannedDataStream.listen((scanData) {
-      print(scanData.code);
-      _absensiHandle(_tokenSecure, scanData.code);
-      controller?.dispose();
-    });
-  }
-
-  void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
-    log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
-    if (!p) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('no Permission')),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
 }
