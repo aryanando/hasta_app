@@ -45,6 +45,7 @@ dependencies:
   qr_code_scanner: ^1.0.1
   searchable_listview: ^2.10.2
   mobile_scanner: ^4.0.1
+  flutter_phoenix: ^1.1.1
 
 dev_dependencies:
   flutter_test:

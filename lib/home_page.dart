@@ -96,7 +96,21 @@ class _HomePageState extends State<HomePage> {
         //mengabil data user
         final dataAbsensiHariIni = json.decode(response.body)['data'];
         print(dataAbsensiHariIni);
-        await storage.write(key: 'shiftID', value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
+          if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
+            await storage.write(
+                key: 'shiftID',
+                value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
+          } else {
+            await storage.write(
+                key: 'shiftID',
+                value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+          }
+        } else {
+          await storage.write(
+              key: 'shiftID',
+              value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        }
         if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
           if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
             setState(() {
@@ -113,11 +127,12 @@ class _HomePageState extends State<HomePage> {
             _cardMessage = "Selamat sore, hati-hati dijalan, sampai jumpa esok";
             _absensiState = "/jadwal";
           }
-        }else {
+        } else {
           setState(() {
             _cardColor = 0xffdddddd;
             _cardTittle = "Anda sedang Off (Libur)";
-            _cardMessage = "Jika ada kesalahan silahkan hubungi Karu, selamat berlibur";
+            _cardMessage =
+                "Jika ada kesalahan silahkan hubungi Karu, selamat berlibur";
             _absensiState = "/jadwal";
           });
         }
@@ -332,8 +347,8 @@ class _HomePageState extends State<HomePage> {
                                     child: ListTile(
                                       // leading: Icon(Icons.close),
                                       title: Text('Beta Tester Release'),
-                                      subtitle:
-                                          Text('Anda beruntung menjadi bagian pengembangan APP Ini'),
+                                      subtitle: Text(
+                                          'Anda beruntung menjadi bagian pengembangan APP Ini'),
                                       // trailing: Icon(Icons.more_vert),
                                     ),
                                   ),

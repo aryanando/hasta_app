@@ -66,7 +66,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       // print('Token Anda Adalah Secure: $myToken');
       // _absensiHandle(myToken);
       // absensiHandle(myToken);
-      print('asdd ${_shiftID['id']}' );
+      print('asdd ${_shiftID['shift_id']}' );
     } else {
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -87,7 +87,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
         final response = await http.post(
           Uri.parse(apiUrl),
           body: jsonEncode({
-            'shift_id': _shiftID['id'],
+            'shift_id': _shiftID['shift_id'],
             'user_id': _userData['id'],
           }),
           headers: {

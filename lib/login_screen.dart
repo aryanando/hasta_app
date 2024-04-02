@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hasta_app/home_page.dart';
 // import 'package:hasta_app/WelcomeScreen.dart';
 import 'package:hasta_app/reg_screen.dart';
@@ -17,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
-
+  Text loginStatus = const Text("");
   // Create storage
   final storage = const FlutterSecureStorage();
 
@@ -58,6 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       debugPrint(apiUrl);
       print(response.statusCode);
+      setState(() {
+        loginStatus = const Text("Sandi Atau Email Salah!..", style: TextStyle(color: Colors.red));
+      });
     }
   }
 
@@ -136,13 +140,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 20,
+                        child: loginStatus,
                       ),
                       const Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          'Lupa Sandi?..',
+                          // 'Lupa Sandi?..',
+                          '',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
@@ -185,37 +191,37 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 150,
                       ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            const Text(
-                              "Belum punya akun?",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const RegScreen()));
-                              },
-                              child: const Text(
-                                "Daftar",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
+                      // Align(
+                      //   alignment: Alignment.bottomRight,
+                      //   child: Column(
+                      //     mainAxisAlignment: MainAxisAlignment.end,
+                      //     crossAxisAlignment: CrossAxisAlignment.end,
+                      //     children: [
+                      //       const Text(
+                      //         "Belum punya akun?",
+                      //         style: TextStyle(
+                      //             fontWeight: FontWeight.bold,
+                      //             color: Colors.grey),
+                      //       ),
+                      //       GestureDetector(
+                      //         onTap: () {
+                      //           Navigator.push(
+                      //               context,
+                      //               MaterialPageRoute(
+                      //                   builder: (context) =>
+                      //                       const RegScreen()));
+                      //         },
+                      //         child: const Text(
+                      //           "Daftar",
+                      //           style: TextStyle(
+                      //               fontWeight: FontWeight.bold,
+                      //               fontSize: 17,
+                      //               color: Colors.black),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // )
                     ],
                   ),
                 ),

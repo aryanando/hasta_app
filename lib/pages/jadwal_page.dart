@@ -20,6 +20,9 @@ class _JadwalPageState extends State<JadwalPage> {
           },
         ),
       ),
+      body: ListView(
+        
+      ),
     );
   }
 }
