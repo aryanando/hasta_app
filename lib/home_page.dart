@@ -96,21 +96,8 @@ class _HomePageState extends State<HomePage> {
         //mengabil data user
         final dataAbsensiHariIni = json.decode(response.body)['data'];
         print(dataAbsensiHariIni);
-        if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
-          if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
-            await storage.write(
-                key: 'shiftID',
-                value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
-          } else {
-            await storage.write(
-                key: 'shiftID',
-                value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-          }
-        } else {
-          await storage.write(
-              key: 'shiftID',
-              value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-        }
+        print("here");
+
         if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
           if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
             setState(() {
@@ -135,6 +122,21 @@ class _HomePageState extends State<HomePage> {
                 "Jika ada kesalahan silahkan hubungi Karu, selamat berlibur";
             _absensiState = "/jadwal";
           });
+        }
+        if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
+          if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
+            await storage.write(
+                key: 'shiftID',
+                value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
+          } else {
+            await storage.write(
+                key: 'shiftID',
+                value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+          }
+        } else {
+          await storage.write(
+              key: 'shiftID',
+              value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
         }
 
         print(json.decode(response.body));
@@ -167,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Hai, ${widget.name}!',
+                            'Hai, ${widget.name.length > 10 ? '${widget.name.substring(0, 10)}...' : widget.name}!',
                             style: const TextStyle(
                               color: Color(0xff0f1035),
                               fontSize: 24,
