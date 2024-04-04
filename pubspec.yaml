@@ -47,6 +47,8 @@ dependencies:
   mobile_scanner: ^4.0.1
   flutter_phoenix: ^1.1.1
   quiver: ^3.2.1
+  persistent_bottom_nav_bar: ^5.0.2
+  persistent_bottom_nav_bar_v2: ^5.2.0
 
 dev_dependencies:
   flutter_test:
