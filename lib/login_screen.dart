@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hasta_app/home_page.dart';
 // import 'package:hasta_app/WelcomeScreen.dart';
-import 'package:hasta_app/reg_screen.dart';
+// import 'package:hasta_app/reg_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:developer';
@@ -60,7 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
       debugPrint(apiUrl);
       print(response.statusCode);
       setState(() {
-        loginStatus = const Text("Sandi Atau Email Salah!..", style: TextStyle(color: Colors.red));
+        loginStatus = const Text("Sandi Atau Email Salah!..",
+            style: TextStyle(color: Colors.red));
       });
     }
   }

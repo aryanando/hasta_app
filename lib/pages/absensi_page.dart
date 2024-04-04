@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -22,7 +21,6 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
   final storage = const FlutterSecureStorage();
   Map _userData = {};
   Map _shiftID = {};
-  
 
   @override
   void initState() {
@@ -44,12 +42,11 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       _shiftID = jsonDecode(shiftID);
       _tokenSecure = tokenSecure;
     });
-      
+
     // print('Token Anda Adalah: $_tokenSecure');
     if (_tokenSecure != "") {
       _checkToken(_tokenSecure);
     } else {
-      
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -66,7 +63,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       // print('Token Anda Adalah Secure: $myToken');
       // _absensiHandle(myToken);
       // absensiHandle(myToken);
-      print('asdd ${_shiftID['shift_id']}' );
+      print('asdd ${_shiftID['shift_id']}');
     } else {
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -118,56 +115,54 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Mobile Scanner'),
-          actions: [
-            IconButton(
-              color: Colors.white,
-              icon: ValueListenableBuilder(
-                valueListenable: cameraController.torchState,
-                builder: (context, state, child) {
-                  switch (state as TorchState) {
-                    case TorchState.off:
-                      return const Icon(Icons.flash_off, color: Colors.grey);
-                    case TorchState.on:
-                      return const Icon(Icons.flash_on, color: Colors.yellow);
-                  }
-                },
-              ),
-              iconSize: 32.0,
-              onPressed: () => cameraController.toggleTorch(),
+      appBar: AppBar(
+        title: const Text('Mobile Scanner'),
+        actions: [
+          IconButton(
+            color: Colors.white,
+            icon: ValueListenableBuilder(
+              valueListenable: cameraController.torchState,
+              builder: (context, state, child) {
+                switch (state as TorchState) {
+                  case TorchState.off:
+                    return const Icon(Icons.flash_off, color: Colors.grey);
+                  case TorchState.on:
+                    return const Icon(Icons.flash_on, color: Colors.yellow);
+                }
+              },
             ),
-            IconButton(
-              color: Colors.white,
-              icon: ValueListenableBuilder(
-                valueListenable: cameraController.cameraFacingState,
-                builder: (context, state, child) {
-                  switch (state as CameraFacing) {
-                    case CameraFacing.front:
-                      return const Icon(Icons.camera_front);
-                    case CameraFacing.back:
-                      return const Icon(Icons.camera_rear);
-                  }
-                },
-              ),
-              iconSize: 32.0,
-              onPressed: () => cameraController.switchCamera(),
+            iconSize: 32.0,
+            onPressed: () => cameraController.toggleTorch(),
+          ),
+          IconButton(
+            color: Colors.white,
+            icon: ValueListenableBuilder(
+              valueListenable: cameraController.cameraFacingState,
+              builder: (context, state, child) {
+                switch (state as CameraFacing) {
+                  case CameraFacing.front:
+                    return const Icon(Icons.camera_front);
+                  case CameraFacing.back:
+                    return const Icon(Icons.camera_rear);
+                }
+              },
             ),
-          ],
-        ),
-        body: MobileScanner(
-          // fit: BoxFit.contain,
-          controller: cameraController,
-          onDetect: (capture) {
-            final List<Barcode> barcodes = capture.barcodes;
-            final Uint8List? image = capture.image;
-            for (final barcode in barcodes) {
-              debugPrint('Barcode found! ${barcode.rawValue}');
-              _absensiHandle(_tokenSecure, barcode.rawValue);
-            }
-          },
-        ),
+            iconSize: 32.0,
+            onPressed: () => cameraController.switchCamera(),
+          ),
+        ],
+      ),
+      body: MobileScanner(
+        // fit: BoxFit.contain,
+        controller: cameraController,
+        onDetect: (capture) {
+          final List<Barcode> barcodes = capture.barcodes;
+          for (final barcode in barcodes) {
+            debugPrint('Barcode found! ${barcode.rawValue}');
+            _absensiHandle(_tokenSecure, barcode.rawValue);
+          }
+        },
+      ),
     );
   }
-
 }

@@ -39,7 +39,6 @@ class _HomePageState extends State<HomePage> {
   // Method to load the shared preference data
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
-    final userData = await storage.read(key: 'userData') ?? "";
     setState(() {
       _tokenSecure = tokenSecure;
     });
@@ -52,10 +51,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadPreferences();
-    _cardColor = (0xffffdee4);
-    _cardTittle = "Anda Belum Absen";
-    _cardMessage = "Ketuk disini untuk scan absensi datang";
-    _absensiState = "/absensi-cam";
+    _cardColor = 0xffdddddd;
+    _cardTittle = "Anda sedang Off (Libur)";
+    _cardMessage = "Jika ada kesalahan silahkan hubungi Karu, selamat berlibur";
+    _absensiState = "/jadwal";
   }
 
   var now = DateTime.now();
