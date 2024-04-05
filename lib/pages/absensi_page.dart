@@ -63,7 +63,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
       // print('Token Anda Adalah Secure: $myToken');
       // _absensiHandle(myToken);
       // absensiHandle(myToken);
-      print('asdd ${_shiftID['shift_id']}');
+      print('user_shifts_id: ${_shiftID['user_shifts_id']}');
     } else {
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -86,6 +86,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
           body: jsonEncode({
             'shift_id': _shiftID['shift_id'],
             'user_id': _userData['id'],
+            'user_shift_id': _shiftID['user_shifts_id'],
           }),
           headers: {
             'Content-Type': 'application/json',

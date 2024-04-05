@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         //mengabil data user
         final dataAbsensiHariIni = json.decode(response.body)['data'];
-        // print(dataAbsensiHariIni);
+        print(dataAbsensiHariIni);
         // print("here");
 
         if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
