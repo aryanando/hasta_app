@@ -1,4 +1,4 @@
-package com.example.hasta_app
+package com.batubhayangkara.hasta_app_emp
 
 import io.flutter.embedding.android.FlutterActivity
 
