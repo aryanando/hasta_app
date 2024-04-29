@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool passwordVisible = false;
+  bool passwordHidden = true;
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
@@ -125,23 +125,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextFormField(
                         controller: passwordController,
-                        obscureText: passwordVisible,
+                        obscureText: passwordHidden,
                         enableSuggestions: false,
                         autocorrect: false,
                         keyboardType: TextInputType.visiblePassword,
                         textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
-                              icon: Icon(passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off),
+                              icon: Icon(passwordHidden
+                                  ? Icons.visibility_off
+                                  : Icons.visibility),
                               onPressed: () {
                                 setState(
                                   () {
-                                    passwordVisible = !passwordVisible;
+                                    passwordHidden = !passwordHidden;
                                   },
                                 );
                               },
+                              color: Colors.grey,
                             ),
                             label: const Text(
                               'Sandi',
@@ -173,17 +174,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         height: 55,
                         width: 300,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          gradient: const LinearGradient(colors: [
-                            Color(0xff7fc7d9),
-                            Color(0xff365486),
-                          ]),
-                        ),
                         child: Center(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
+                                backgroundColor: Colors.blue,
                                 shadowColor: Colors.transparent),
                             onPressed: () {
                               login(emailController.text,
