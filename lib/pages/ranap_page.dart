@@ -83,7 +83,8 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
             pasiens.add(Pasien(
               room: pasien['bgsl'],
               name: pasien['nama'],
-              alamat: pasien['alamat'],
+              alamat:
+                  "${pasien['alamat']}, ${pasien['kel']}, ${pasien['kec']}, ${pasien['kab']}, ${pasien['prov']}",
               pj: pasien['pj'],
             ));
           }
