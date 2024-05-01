@@ -28,7 +28,7 @@ class _JadwalPageState extends State<JadwalPage> {
   final moonLanding = DateTime.now();
   String? _tokenSecure;
   final storage = const FlutterSecureStorage();
-  var month = 4;
+  var month = DateTime.now();
   Map _dataAbsensiBulanIni = {};
 
   @override
@@ -49,7 +49,7 @@ class _JadwalPageState extends State<JadwalPage> {
 
   Future<void> getAbsensiData(String? myToken) async {
     String apiUrl =
-        '${const String.fromEnvironment('devUrl')}api/v1/shift-user/$month';
+        '${const String.fromEnvironment('devUrl')}api/v1/shift-user/${month.month}';
     try {
       final response = await http.get(Uri.parse(apiUrl), headers: {
         'Content-Type': 'application/json',
