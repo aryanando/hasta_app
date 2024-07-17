@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 
 // import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 // import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
@@ -12,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
 class HomePage extends StatefulWidget {
+  
   final int id;
   final String name;
   final String email;
@@ -28,6 +30,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  
   // Variables to store the shared preference data
   String? _tokenSecure;
   int _cardColor = 0xffffdee4;
@@ -45,6 +48,7 @@ class _HomePageState extends State<HomePage> {
     });
     // print('Token Anda Adalah: $_token');
     // print('Token Anda Adalah Secure: $_tokenSecure');
+    print("--------------- You're in Home Page ---------------");
     getAbsensiData(_tokenSecure);
   }
 
@@ -72,7 +76,7 @@ class _HomePageState extends State<HomePage> {
     final response = await http.post(Uri.parse(url), headers: headers);
     await storage.deleteAll();
 
-    print(response.body);
+    // print(response.body);
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
@@ -95,7 +99,7 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         //mengabil data user
         final dataAbsensiHariIni = json.decode(response.body)['data'];
-        print(dataAbsensiHariIni);
+        // print(dataAbsensiHariIni);
         // print("here");
 
         if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
@@ -197,10 +201,10 @@ class _HomePageState extends State<HomePage> {
           }
         }
 
-        print(json.decode(response.body));
+        // print(json.decode(response.body));
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
