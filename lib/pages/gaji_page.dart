@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:quiver/strings.dart';
 
 class GajiPage extends StatefulWidget {
   const GajiPage({super.key});
@@ -48,7 +46,7 @@ class _GajiPageState extends State<GajiPage> {
         final dataPendapatan = json.decode(response.body)['data'];
         // print(dataPendapatan[0]['id']);
         setState(() {
-          _dataPendapatan = dataPendapatan[0];
+          _dataPendapatan = dataPendapatan[1];
         });
       } else {
         debugPrint(apiUrl);
@@ -107,7 +105,7 @@ class _GajiPageState extends State<GajiPage> {
                       const ListTile(
                         title: Text("Pendapatan",
                             style: TextStyle(color: Colors.red, fontSize: 20)),
-                        subtitle: Text("Juli 2024"),
+                        subtitle: Text("Agustus 2024"),
                       ),
                       // Gaji Pokok
                       Row(
@@ -293,7 +291,7 @@ class _GajiPageState extends State<GajiPage> {
                       const ListTile(
                         title: Text("Potongan",
                             style: TextStyle(color: Colors.red, fontSize: 20)),
-                        subtitle: Text("Juli 2024"),
+                        subtitle: Text("Agustus 2024"),
                       ),
                       // Pot BPJS TK
                       Row(
