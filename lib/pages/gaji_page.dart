@@ -18,6 +18,14 @@ class _GajiPageState extends State<GajiPage> {
   final storage = const FlutterSecureStorage();
   var month = DateTime.now();
   Map _dataPendapatan = {};
+  Map _dataPendapatanAll = {};
+  List<DropdownMenuItem<int>> get dropdownItems {
+    List<DropdownMenuItem<int>> menuItems = [
+      const DropdownMenuItem(value: 0, child: Text("Juli 2024")),
+      const DropdownMenuItem(value: 1, child: Text("Agustus 2024")),
+    ];
+    return menuItems;
+  }
 
   @override
   void initState() {
@@ -34,7 +42,7 @@ class _GajiPageState extends State<GajiPage> {
   }
 
   Future<void> getSalaryData(String? myToken) async {
-    String apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/slip/188';
+    String apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/slip/2';
     try {
       final response = await http.get(Uri.parse(apiUrl), headers: {
         'Content-Type': 'application/json',
@@ -44,9 +52,14 @@ class _GajiPageState extends State<GajiPage> {
 
       if (response.statusCode == 200) {
         final dataPendapatan = json.decode(response.body)['data'];
-        // print(dataPendapatan[0]['id']);
+        // print(dataPendapatan);
+
         setState(() {
           _dataPendapatan = dataPendapatan[1];
+        });
+        setState(() {
+          int i = -1;
+          dataPendapatan.forEach((data) => {_dataPendapatanAll[i+=1] = data});
         });
       } else {
         debugPrint(apiUrl);
@@ -57,55 +70,77 @@ class _GajiPageState extends State<GajiPage> {
         return;
       } else {}
     }
-    
+
     print("--------------- You're in Salary Page ---------------");
-    print(_dataPendapatan);
+    print(_dataPendapatanAll);
   }
 
-  String convertToIDR (String amount) {
+  String convertToIDR(String amount) {
     if (amount == 'null') {
       amount = '0';
     }
     String formattedAmount =
-        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp.').format(int.parse(amount));
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp.')
+            .format(int.parse(amount));
 
     return formattedAmount.replaceAll(',00', '');
   }
+
+  int selectedValue = 1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Data Gaji'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
+          title: const Text('Data Gaji'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Reload',
+              onPressed: () {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text('Reload Data')));
+                getSalaryData(_tokenSecure);
+              },
+            ),
+          ]),
       body: Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.all(5),
+        margin: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 206, 206, 206),
+          color: const Color.fromARGB(255, 206, 206, 206),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: ListView(
             children: <Widget>[
+              DropdownButton(
+                  value: selectedValue,
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      selectedValue = newValue!;
+                      _dataPendapatan = _dataPendapatanAll[selectedValue];
+                    });
+                  },
+                  items: dropdownItems),
               const SizedBox(
                 height: 10,
               ),
               Center(
                 child: Card(
-                  color: Color.fromARGB(255, 255, 255, 255),
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       const ListTile(
                         title: Text("Pendapatan",
                             style: TextStyle(color: Colors.red, fontSize: 20)),
-                        subtitle: Text("Agustus 2024"),
+                        subtitle: Text("Data penghasilan selama satu bulan"),
                       ),
                       // Gaji Pokok
                       Row(
@@ -126,7 +161,11 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['gaji_pokok'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['gaji_pokok'].toString())),
+                                Text(_dataPendapatan['gaji_pokok'].toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(_dataPendapatan['gaji_pokok']
+                                        .toString())),
                               ],
                             ),
                           ),
@@ -151,7 +190,11 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['bpjs_tk'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['bpjs_tk'].toString())),
+                                Text(_dataPendapatan['bpjs_tk'].toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['bpjs_tk'].toString())),
                               ],
                             ),
                           ),
@@ -176,7 +219,11 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['bpjs_4p'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['bpjs_4p'].toString())),
+                                Text(_dataPendapatan['bpjs_4p'].toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['bpjs_4p'].toString())),
                               ],
                             ),
                           ),
@@ -201,7 +248,10 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['thr'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['thr'].toString())),
+                                Text(_dataPendapatan['thr'].toString() == 'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['thr'].toString())),
                               ],
                             ),
                           ),
@@ -226,7 +276,11 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['t_keluarga'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['t_keluarga'].toString())),
+                                Text(_dataPendapatan['t_keluarga'].toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(_dataPendapatan['t_keluarga']
+                                        .toString())),
                               ],
                             ),
                           ),
@@ -251,7 +305,11 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['jaspel'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['jaspel'].toString())),
+                                Text(_dataPendapatan['jaspel'].toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['jaspel'].toString())),
                               ],
                             ),
                           ),
@@ -265,13 +323,14 @@ class _GajiPageState extends State<GajiPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(right: 15, bottom: 15),
+                            margin:
+                                const EdgeInsets.only(right: 15, bottom: 15),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Text(
                                   "Total Gaji: ${convertToIDR(_dataPendapatan['jumlah_gaji'].toString())}",
-                                  style: TextStyle(fontSize: 20),
+                                  style: const TextStyle(fontSize: 20),
                                 ),
                               ],
                             ),
@@ -284,14 +343,14 @@ class _GajiPageState extends State<GajiPage> {
               ),
               Center(
                 child: Card(
-                  color: Color.fromARGB(255, 255, 255, 255),
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       const ListTile(
                         title: Text("Potongan",
                             style: TextStyle(color: Colors.red, fontSize: 20)),
-                        subtitle: Text("Agustus 2024"),
+                        subtitle: Text("Data potongan selama satu bulan"),
                       ),
                       // Pot BPJS TK
                       Row(
@@ -312,7 +371,13 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['pot_bpjs_tk'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_bpjs_tk'].toString())),
+                                Text(
+                                    _dataPendapatan['pot_bpjs_tk'].toString() ==
+                                            'null'
+                                        ? 'Rp.0'
+                                        : convertToIDR(
+                                            _dataPendapatan['pot_bpjs_tk']
+                                                .toString())),
                               ],
                             ),
                           ),
@@ -337,7 +402,13 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['pot_bpjs_1p'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_bpjs_1p'].toString())),
+                                Text(
+                                    _dataPendapatan['pot_bpjs_1p'].toString() ==
+                                            'null'
+                                        ? 'Rp.0'
+                                        : convertToIDR(
+                                            _dataPendapatan['pot_bpjs_1p']
+                                                .toString())),
                               ],
                             ),
                           ),
@@ -362,14 +433,20 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['pot_bpjs_4p'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_bpjs_4p'].toString())),
+                                Text(
+                                    _dataPendapatan['pot_bpjs_4p'].toString() ==
+                                            'null'
+                                        ? 'Rp.0'
+                                        : convertToIDR(
+                                            _dataPendapatan['pot_bpjs_4p']
+                                                .toString())),
                               ],
                             ),
                           ),
                         ],
                       ),
                       // Potongan Tunjangan Keluarga
-                      
+
                       // Potongan Tunjangan Keluarga
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -389,7 +466,13 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['pot_t_keluarga'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_t_keluarga'].toString())),
+                                Text(_dataPendapatan['pot_t_keluarga']
+                                            .toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['pot_t_keluarga']
+                                            .toString())),
                               ],
                             ),
                           ),
@@ -414,7 +497,11 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['pot_bon'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_bon'].toString())),
+                                Text(_dataPendapatan['pot_bon'].toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['pot_bon'].toString())),
                               ],
                             ),
                           ),
@@ -439,7 +526,11 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(_dataPendapatan['pot_thr'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_thr'].toString())),
+                                Text(_dataPendapatan['pot_thr'].toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['pot_thr'].toString())),
                               ],
                             ),
                           ),
@@ -464,8 +555,13 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_s_koperasi'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_s_koperasi'].toString())),
+                                Text(_dataPendapatan['pot_s_koperasi']
+                                            .toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['pot_s_koperasi']
+                                            .toString())),
                               ],
                             ),
                           ),
@@ -490,8 +586,13 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_cicilan_kop'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_cicilan_kop'].toString())),
+                                Text(_dataPendapatan['pot_cicilan_kop']
+                                            .toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['pot_cicilan_kop']
+                                            .toString())),
                               ],
                             ),
                           ),
@@ -516,8 +617,13 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_jajan_kop'].toString() == 'null' ?'Rp.0' : convertToIDR(_dataPendapatan['pot_jajan_kop'].toString())),
+                                Text(_dataPendapatan['pot_jajan_kop']
+                                            .toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['pot_jajan_kop']
+                                            .toString())),
                               ],
                             ),
                           ),
@@ -543,7 +649,12 @@ class _GajiPageState extends State<GajiPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Text(
-                                    _dataPendapatan['pot_kinerja'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_kinerja'].toString())),
+                                    _dataPendapatan['pot_kinerja'].toString() ==
+                                            'null'
+                                        ? 'Rp.0'
+                                        : convertToIDR(
+                                            _dataPendapatan['pot_kinerja']
+                                                .toString())),
                               ],
                             ),
                           ),
@@ -568,8 +679,11 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_pph21'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_pph21'].toString())),
+                                Text(_dataPendapatan['pot_pph21'].toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(_dataPendapatan['pot_pph21']
+                                        .toString())),
                               ],
                             ),
                           ),
@@ -594,8 +708,13 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_yatim_ppni'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_yatim_ppni'].toString())),
+                                Text(_dataPendapatan['pot_yatim_ppni']
+                                            .toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['pot_yatim_ppni']
+                                            .toString())),
                               ],
                             ),
                           ),
@@ -620,8 +739,13 @@ class _GajiPageState extends State<GajiPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_tagihan_kasir'].toString() == 'null' ? 'Rp.0' : convertToIDR(_dataPendapatan['pot_tagihan_kasir'].toString())),
+                                Text(_dataPendapatan['pot_tagihan_kasir']
+                                            .toString() ==
+                                        'null'
+                                    ? 'Rp.0'
+                                    : convertToIDR(
+                                        _dataPendapatan['pot_tagihan_kasir']
+                                            .toString())),
                               ],
                             ),
                           ),
@@ -635,13 +759,14 @@ class _GajiPageState extends State<GajiPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(right: 15, bottom: 15),
+                            margin:
+                                const EdgeInsets.only(right: 15, bottom: 15),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Text(
                                   "Total Potongan: ${convertToIDR(_dataPendapatan['jumlah_potongan'].toString())}",
-                                  style: TextStyle(fontSize: 20),
+                                  style: const TextStyle(fontSize: 20),
                                 ),
                               ],
                             ),
@@ -654,11 +779,13 @@ class _GajiPageState extends State<GajiPage> {
               ),
               Center(
                 child: Card(
-                  color: Color.fromARGB(255, 255, 255, 255),
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      SizedBox(height: 10,),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -668,7 +795,10 @@ class _GajiPageState extends State<GajiPage> {
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('Diterima:', style: TextStyle(fontSize: 24),), 
+                                Text(
+                                  'Diterima:',
+                                  style: TextStyle(fontSize: 24),
+                                ),
                               ],
                             ),
                           ),
@@ -678,15 +808,19 @@ class _GajiPageState extends State<GajiPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Text(
-                                  convertToIDR(_dataPendapatan['jumlah_diterima'].toString()),
-                                  style: TextStyle(fontSize: 24),
+                                  convertToIDR(
+                                      _dataPendapatan['jumlah_diterima']
+                                          .toString()),
+                                  style: const TextStyle(fontSize: 24),
                                 )
                               ],
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 10,),
+                      const SizedBox(
+                        height: 10,
+                      ),
                     ],
                   ),
                 ),
