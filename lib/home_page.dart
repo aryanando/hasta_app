@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   String _cardTittle = "";
   String _cardMessage = "";
   String _absensiState = "/absensi-cam";
+  Map _dataPengumuman = {};
 
   final storage = const FlutterSecureStorage();
 
@@ -47,6 +48,37 @@ class _HomePageState extends State<HomePage> {
     // print('Token Anda Adalah Secure: $_tokenSecure');
     print("--------------- You're in Home Page ---------------");
     getAbsensiData(_tokenSecure);
+    getPengumuman(_tokenSecure);
+  }
+
+  Future<void> getPengumuman(String? myToken) async {
+    String apiUrl =
+        '${const String.fromEnvironment('devUrl')}api/v1/pengumuman';
+    try {
+      final response = await http.get(Uri.parse(apiUrl), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $myToken',
+      });
+
+      if (response.statusCode == 200) {
+        //mengabil data user
+        final dataPengumuman = json.decode(response.body)['data'];
+
+        setState(() {
+          int i = -1;
+          dataPengumuman.forEach((data) => {_dataPengumuman[i += 1] = data});
+          print(_dataPengumuman);
+        });
+      } else {
+        debugPrint(apiUrl);
+        print(response.statusCode);
+      }
+    } catch (e) {
+      if (!context.mounted) {
+        return;
+      } else {}
+    }
   }
 
   @override
@@ -105,8 +137,7 @@ class _HomePageState extends State<HomePage> {
             _absensiState = "/absensi-cam";
           });
           await storage.write(
-              key: 'userShiftId',
-              value: jsonEncode(dataAbsensiHariIni['id']));
+              key: 'userShiftId', value: jsonEncode(dataAbsensiHariIni['id']));
         } else if (dataAbsensiHariIni['check_out'] == null) {
           print('Belum Absen Pulang');
           setState(() {
@@ -116,8 +147,7 @@ class _HomePageState extends State<HomePage> {
             _absensiState = "/absensi-pulang-cam";
           });
           await storage.write(
-              key: 'userShiftId',
-              value: jsonEncode(dataAbsensiHariIni['id']));
+              key: 'userShiftId', value: jsonEncode(dataAbsensiHariIni['id']));
         } else {
           print('Sudah Pulang');
           setState(() {
@@ -411,6 +441,7 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 children: [
                                   // Header Pengumuman
+
                                   const Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -436,18 +467,24 @@ class _HomePageState extends State<HomePage> {
                                       child: ListView(
                                         scrollDirection: Axis.vertical,
                                         shrinkWrap: true,
-                                        children: const <Widget>[
-                                          Card(
-                                            color: Colors.white,
-                                            child: ListTile(
-                                              // leading: Icon(Icons.close),
-                                              title:
-                                                  Text('Beta Tester Release'),
-                                              subtitle: Text(
-                                                  'Anda beruntung menjadi bagian pengembangan APP Ini'),
-                                              // trailing: Icon(Icons.more_vert),
-                                            ),
-                                          ),
+                                        children: <Widget>[
+                                          for (var i = 0;
+                                              i < _dataPengumuman.length;
+                                              i++)
+                                            if (_dataPengumuman[i]['status'] ==
+                                                1)
+                                              Card(
+                                                color: Colors.white,
+                                                child: ListTile(
+                                                  // leading: Icon(Icons.close),
+                                                  title: Text(_dataPengumuman[i]
+                                                      ['name']),
+                                                  subtitle: Text(
+                                                      _dataPengumuman[i]
+                                                          ['content']),
+                                                  // trailing: Icon(Icons.more_vert),
+                                                ),
+                                              ),
                                         ],
                                       ),
                                     ),
@@ -464,7 +501,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             item: ItemConfig(
-              icon: Icon(Icons.home),
+              icon: const Icon(Icons.home),
               title: "Home",
             ),
           ),
@@ -473,7 +510,7 @@ class _HomePageState extends State<HomePage> {
               child: Text('data'),
             ),
             item: ItemConfig(
-              icon: Icon(Icons.message),
+              icon: const Icon(Icons.message),
               title: "Messages",
             ),
           ),
