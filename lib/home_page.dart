@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
 class HomePage extends StatefulWidget {
-  
   final int id;
   final String name;
   final String email;
@@ -29,7 +28,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
   // Variables to store the shared preference data
   String? _tokenSecure;
   int _cardColor = 0xffffdee4;
@@ -93,112 +91,139 @@ class _HomePageState extends State<HomePage> {
         'Authorization': 'Bearer $myToken',
       });
 
-      // inspect(response.statusCode);
-
       if (response.statusCode == 200) {
-        //mengabil data user
         final dataAbsensiHariIni = json.decode(response.body)['data'];
-        // print(dataAbsensiHariIni);
-        // print("here");
 
-        if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
-          if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
-            setState(() {
-              _cardColor = 0xffa4ffa4;
-              _cardTittle = "Anda Telah Checkin";
-              _cardMessage =
-                  "Untuk pulang silahkan ketuk notif ini sekali lagi";
-              _absensiState = "/absensi-pulang-cam";
-            });
-            if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
-              if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
-                await storage.write(
-                    key: 'shiftID',
-                    value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
-              } else {
-                await storage.write(
-                    key: 'shiftID',
-                    value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-              }
-            } else {
-              await storage.write(
-                  key: 'shiftID',
-                  value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-            }
-          } else {
-            setState(() {
-              _cardColor = 0xffffbaba;
-              _cardTittle = "Anda Belum Absen";
-              _cardMessage = "Untuk absensi silahkan ketuk notif ini!!!";
-              _absensiState = "/absensi-cam";
-            });
+        print(dataAbsensiHariIni['id']);
 
-            if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
-              if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
-                await storage.write(
-                    key: 'shiftID',
-                    value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
-              } else {
-                await storage.write(
-                    key: 'shiftID',
-                    value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-              }
-            } else {
-              await storage.write(
-                  key: 'shiftID',
-                  value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-            }
-          }
-          if (dataAbsensiHariIni['absensi_hari_ini'][0]['check_out'] != null) {
-            setState(() {
-              _cardColor = 0xff91d2ff;
-              _cardTittle = "Anda Telah Checkout";
-              _cardMessage =
-                  "Selamat sore, hati-hati dijalan, sampai jumpa esok";
-              _absensiState = "/jadwal";
-            });
-
-            if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
-              if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
-                await storage.write(
-                    key: 'shiftID',
-                    value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
-              } else {
-                await storage.write(
-                    key: 'shiftID',
-                    value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-              }
-            } else {
-              await storage.write(
-                  key: 'shiftID',
-                  value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-            }
-          }
-        } else {
+        if (dataAbsensiHariIni['check_in'] == null) {
+          print('Belum Absen Masuk');
           setState(() {
-            _cardColor = 0xffdddddd;
-            _cardTittle = "Anda sedang Off (Libur)";
-            _cardMessage =
-                "Jika ada kesalahan silahkan hubungi Karu, selamat berlibur";
+            _cardColor = 0xffffbaba;
+            _cardTittle = "Anda Belum Absen";
+            _cardMessage = "Untuk absensi silahkan ketuk notif ini!!!";
+            _absensiState = "/absensi-cam";
+          });
+          await storage.write(
+              key: 'userShiftId',
+              value: jsonEncode(dataAbsensiHariIni['id']));
+        } else if (dataAbsensiHariIni['check_out'] == null) {
+          print('Belum Absen Pulang');
+          setState(() {
+            _cardColor = 0xffa4ffa4;
+            _cardTittle = "Anda Telah Checkin";
+            _cardMessage = "Untuk pulang silahkan ketuk notif ini sekali lagi";
+            _absensiState = "/absensi-pulang-cam";
+          });
+          await storage.write(
+              key: 'userShiftId',
+              value: jsonEncode(dataAbsensiHariIni['id']));
+        } else {
+          print('Sudah Pulang');
+          setState(() {
+            _cardColor = 0xff91d2ff;
+            _cardTittle = "Anda Telah Checkout";
+            _cardMessage = "Selamat sore, hati-hati dijalan, sampai jumpa esok";
             _absensiState = "/jadwal";
           });
-
-          if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
-            if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
-              await storage.write(
-                  key: 'shiftID',
-                  value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
-            } else {
-              await storage.write(
-                  key: 'shiftID',
-                  value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-            }
-          } else {
-            await storage.write(
-                key: 'shiftID',
-                value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
-          }
         }
+        //   if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
+        //     setState(() {
+        //       _cardColor = 0xffa4ffa4;
+        //       _cardTittle = "Anda Telah Checkin";
+        //       _cardMessage =
+        //           "Untuk pulang silahkan ketuk notif ini sekali lagi";
+        //       _absensiState = "/absensi-pulang-cam";
+        //     });
+        //     if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
+        //       if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
+        //         await storage.write(
+        //             key: 'shiftID',
+        //             value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
+        //       } else {
+        //         await storage.write(
+        //             key: 'shiftID',
+        //             value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        //       }
+        //     } else {
+        //       await storage.write(
+        //           key: 'shiftID',
+        //           value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        //     }
+        //   } else {
+        //     setState(() {
+        //       _cardColor = 0xffffbaba;
+        //       _cardTittle = "Anda Belum Absen";
+        //       _cardMessage = "Untuk absensi silahkan ketuk notif ini!!!";
+        //       _absensiState = "/absensi-cam";
+        //     });
+
+        //     if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
+        //       if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
+        //         await storage.write(
+        //             key: 'shiftID',
+        //             value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
+        //       } else {
+        //         await storage.write(
+        //             key: 'shiftID',
+        //             value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        //       }
+        //     } else {
+        //       await storage.write(
+        //           key: 'shiftID',
+        //           value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        //     }
+        //   }
+        //   if (dataAbsensiHariIni['absensi_hari_ini'][0]['check_out'] != null) {
+        //     setState(() {
+        //       _cardColor = 0xff91d2ff;
+        //       _cardTittle = "Anda Telah Checkout";
+        //       _cardMessage =
+        //           "Selamat sore, hati-hati dijalan, sampai jumpa esok";
+        //       _absensiState = "/jadwal";
+        //     });
+
+        //     if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
+        //       if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
+        //         await storage.write(
+        //             key: 'shiftID',
+        //             value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
+        //       } else {
+        //         await storage.write(
+        //             key: 'shiftID',
+        //             value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        //       }
+        //     } else {
+        //       await storage.write(
+        //           key: 'shiftID',
+        //           value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        //     }
+        //   }
+        // } else {
+        //   setState(() {
+        //     _cardColor = 0xffdddddd;
+        //     _cardTittle = "Anda sedang Off (Libur)";
+        //     _cardMessage =
+        //         "Jika ada kesalahan silahkan hubungi Karu, selamat berlibur";
+        //     _absensiState = "/jadwal";
+        //   });
+
+        //   if (dataAbsensiHariIni['shift_hari_ini'].length == 2) {
+        //     if (dataAbsensiHariIni['absensi_hari_ini'].length == 0) {
+        //       await storage.write(
+        //           key: 'shiftID',
+        //           value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][1]));
+        //     } else {
+        //       await storage.write(
+        //           key: 'shiftID',
+        //           value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        //     }
+        //   } else {
+        //     await storage.write(
+        //         key: 'shiftID',
+        //         value: jsonEncode(dataAbsensiHariIni['shift_hari_ini'][0]));
+        //   }
+        // }
 
         // print(json.decode(response.body));
       } else {

@@ -17,9 +17,8 @@ class AbsensiPulangScanPage extends StatefulWidget {
 class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
   MobileScannerController cameraControllerCheckout = MobileScannerController();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String? _tokenSecure;
+  String? _tokenSecure, _userShiftID;
   int _isValidQr = 0;
-  int _idAbsensi = 0;
 
   final storage = const FlutterSecureStorage();
 
@@ -33,32 +32,17 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
 
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
+    final userShiftID = await storage.read(key: 'userShiftId') ?? "{}";
+    print(userShiftID);
     setState(() {
       _tokenSecure = tokenSecure;
+      _userShiftID = userShiftID;
     });
-    // print('Token Anda Adalah: $_tokenSecure');
-    if (_tokenSecure != "") {
-      _checkToken(_tokenSecure);
-    } else {
-      print(_tokenSecure);
-      if (!context.mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const WelcomeScreen(),
-        ),
-        (route) => false,
-      );
-    }
+    _checkToken(tokenSecure);
   }
 
   void _checkToken(String? myToken) {
-    if (myToken != "") {
-      // print('Token Anda Adalah Secure: $myToken');
-      // _absensiHandle(myToken);
-      // absensiHandle(myToken);
-      getAbsensiData(myToken);
-    } else {
+    if (myToken == "") {
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -73,12 +57,12 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
   Future<void> _absensiHandle(String? token, String? absensiToken) async {
     if (_isValidQr == 0) {
       String apiUrl =
-          '${const String.fromEnvironment('devUrl')}api/v1/absensi/$absensiToken';
+          '${const String.fromEnvironment('devUrl')}api/v1/absensi/$absensiToken/out';
       try {
         final response = await http.put(
           Uri.parse(apiUrl),
           body: jsonEncode({
-            'absens_id': _idAbsensi,
+            'user_shift_id': _userShiftID,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -108,46 +92,11 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
     }
   }
 
-  Future<void> getAbsensiData(String? myToken) async {
-    const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/absensi';
-    try {
-      final response = await http.get(Uri.parse(apiUrl), headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $myToken',
-      });
-
-      // inspect(response.statusCode);
-
-      if (response.statusCode == 200) {
-        //mengabil data user
-        final dataAbsensiHariIni = json.decode(response.body)['data'];
-        print(dataAbsensiHariIni);
-        if (dataAbsensiHariIni['shift_hari_ini'].length != 0) {
-          if (dataAbsensiHariIni['absensi_hari_ini'].length != 0) {
-            setState(() {
-              _idAbsensi = dataAbsensiHariIni['absensi_hari_ini'][0]['id'];
-            });
-          }
-        }
-
-        print(json.decode(response.body));
-      } else {
-        debugPrint(apiUrl);
-        print(response.statusCode);
-      }
-    } catch (e) {
-      if (!context.mounted) {
-        return;
-      } else {}
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mobile Scanner'),
+        title: const Text('Scan Untuk Pulang'),
         actions: [
           IconButton(
             color: Colors.white,

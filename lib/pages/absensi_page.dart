@@ -14,57 +14,34 @@ class AbsensiScanPage extends StatefulWidget {
 }
 
 class _AbsensiScanPageState extends State<AbsensiScanPage> {
+MobileScannerController cameraControllerCheckout = MobileScannerController();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String? _tokenSecure;
+  String? _tokenSecure, _userShiftID;
   int _isValidQr = 0;
-  MobileScannerController cameraController = MobileScannerController();
+
   final storage = const FlutterSecureStorage();
-  Map _userData = {};
-  Map _shiftID = {};
 
   @override
   void initState() {
-    // TODO: implement initState
+    cameraControllerCheckout.start();
     _isValidQr = 0;
     _loadPreferences();
     super.initState();
-    cameraController = MobileScannerController();
   }
 
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
-    final userData = await storage.read(key: 'userData') ?? "{}";
-    final shiftID = await storage.read(key: 'shiftID') ?? "{}";
-
+    final userShiftID = await storage.read(key: 'userShiftId') ?? "{}";
+    print(userShiftID);
     setState(() {
-      cameraController.start();
-      _userData = jsonDecode(userData);
-      _shiftID = jsonDecode(shiftID);
       _tokenSecure = tokenSecure;
+      _userShiftID = userShiftID;
     });
-
-    // print('Token Anda Adalah: $_tokenSecure');
-    if (_tokenSecure != "") {
-      _checkToken(_tokenSecure);
-    } else {
-      if (!context.mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const WelcomeScreen(),
-        ),
-        (route) => false,
-      );
-    }
+    _checkToken(tokenSecure);
   }
 
   void _checkToken(String? myToken) {
-    if (myToken != "") {
-      // print('Token Anda Adalah Secure: $myToken');
-      // _absensiHandle(myToken);
-      // absensiHandle(myToken);
-      print('user_shifts_id: ${_shiftID['user_shifts_id']}');
-    } else {
+    if (myToken == "") {
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -79,14 +56,12 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
   Future<void> _absensiHandle(String? token, String? absensiToken) async {
     if (_isValidQr == 0) {
       String apiUrl =
-          '${const String.fromEnvironment('devUrl')}api/v1/absensi/$absensiToken';
+          '${const String.fromEnvironment('devUrl')}api/v1/absensi/$absensiToken/in';
       try {
-        final response = await http.post(
+        final response = await http.put(
           Uri.parse(apiUrl),
           body: jsonEncode({
-            'shift_id': _shiftID['shift_id'],
-            'user_id': _userData['id'],
-            'user_shift_id': _shiftID['user_shifts_id'],
+            'user_shift_id': _userShiftID,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -101,8 +76,11 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
 
           setState(() {
             _isValidQr = 1;
-            cameraController.stop();
+            cameraControllerCheckout.stop();
           });
+          // Navigator.pop(context);
+
+          //berpindah halaman
         } else {
           debugPrint(apiUrl);
           print(response.statusCode);
@@ -117,12 +95,12 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mobile Scanner'),
+        title: const Text('Scan Untuk Masuk'),
         actions: [
           IconButton(
             color: Colors.white,
             icon: ValueListenableBuilder(
-              valueListenable: cameraController.torchState,
+              valueListenable: cameraControllerCheckout.torchState,
               builder: (context, state, child) {
                 switch (state as TorchState) {
                   case TorchState.off:
@@ -133,12 +111,12 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
               },
             ),
             iconSize: 32.0,
-            onPressed: () => cameraController.toggleTorch(),
+            onPressed: () => cameraControllerCheckout.toggleTorch(),
           ),
           IconButton(
             color: Colors.white,
             icon: ValueListenableBuilder(
-              valueListenable: cameraController.cameraFacingState,
+              valueListenable: cameraControllerCheckout.cameraFacingState,
               builder: (context, state, child) {
                 switch (state as CameraFacing) {
                   case CameraFacing.front:
@@ -149,13 +127,13 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
               },
             ),
             iconSize: 32.0,
-            onPressed: () => cameraController.switchCamera(),
+            onPressed: () => cameraControllerCheckout.switchCamera(),
           ),
         ],
       ),
       body: MobileScanner(
         // fit: BoxFit.contain,
-        controller: cameraController,
+        controller: cameraControllerCheckout,
         onDetect: (capture) {
           final List<Barcode> barcodes = capture.barcodes;
           for (final barcode in barcodes) {
