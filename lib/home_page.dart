@@ -258,7 +258,7 @@ class _HomePageState extends State<HomePage> {
         // print(json.decode(response.body));
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
+        print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -412,10 +412,10 @@ class _HomePageState extends State<HomePage> {
                                   ImageButton(
                                     imagePath: "Blabla",
                                     icons: Icons.health_and_safety_rounded,
-                                    pageRoute: "/ralan",
+                                    pageRoute: "/dokter",
                                   ),
                                   Text(
-                                    'Ralan',
+                                    'Jadwal Dokter',
                                     style: TextStyle(fontSize: 12),
                                   )
                                 ],

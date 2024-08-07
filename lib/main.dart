@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hasta_app/login_screen.dart';
 import 'package:hasta_app/pages/absensi_page.dart';
 import 'package:hasta_app/pages/absensi_pulang_page.dart';
+import 'package:hasta_app/pages/dokter_page.dart';
 import 'package:hasta_app/pages/gaji_page.dart';
 import 'package:hasta_app/pages/jadwal_page.dart';
 import 'package:hasta_app/pages/ralan_page.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/ranap': (context) => const RanapPage(),
         '/gaji': (context) => const GajiPage(),
         '/ralan': (context) => const RalanPage(),
+        '/dokter': (context) => const DokterPage(),
       },
     );
   }

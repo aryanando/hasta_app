@@ -26,9 +26,9 @@ class HexColor extends Color {
 
 class _JadwalPageState extends State<JadwalPage> {
   final moonLanding = DateTime.now();
+  var month = DateTime.now();
   String? _tokenSecure;
   final storage = const FlutterSecureStorage();
-  var month = DateTime.now();
   Map _dataAbsensiBulanIni = {};
 
   @override
