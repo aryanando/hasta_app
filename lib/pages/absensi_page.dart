@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hasta_app/welcome_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -14,7 +15,7 @@ class AbsensiScanPage extends StatefulWidget {
 }
 
 class _AbsensiScanPageState extends State<AbsensiScanPage> {
-MobileScannerController cameraControllerCheckout = MobileScannerController();
+  MobileScannerController cameraControllerCheckout = MobileScannerController();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   String? _tokenSecure, _userShiftID;
   int _isValidQr = 0;
@@ -79,7 +80,8 @@ MobileScannerController cameraControllerCheckout = MobileScannerController();
             cameraControllerCheckout.stop();
           });
           // Navigator.pop(context);
-
+          // Navigator.of(context, rootNavigator: true).pop();
+          _showSimpleModalDialog(context);
           //berpindah halaman
         } else {
           debugPrint(apiUrl);
@@ -89,6 +91,54 @@ MobileScannerController cameraControllerCheckout = MobileScannerController();
         debugPrint(e.toString());
       }
     }
+  }
+
+  _showSimpleModalDialog(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Color.fromARGB(255, 165, 240, 136),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            child: Container(
+              
+              constraints: BoxConstraints(maxHeight: 150),
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      RichText(
+                        textAlign: TextAlign.justify,
+                        text: TextSpan(
+                            text: "Success !!!",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 26,
+                                color: Colors.black,
+                                wordSpacing: 1)),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            Navigator.of(context, rootNavigator: true).pop();
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
+                          icon: const FaIcon(FontAwesomeIcons.check)),
+                          SizedBox(height: 20,),
+                          Text('Tap to Close!!!')
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   @override
@@ -111,7 +161,9 @@ MobileScannerController cameraControllerCheckout = MobileScannerController();
               },
             ),
             iconSize: 32.0,
-            onPressed: () => cameraControllerCheckout.toggleTorch(),
+            onPressed: () {
+              _showSimpleModalDialog(context);
+            },
           ),
           IconButton(
             color: Colors.white,

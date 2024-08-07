@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class DokterPage extends StatefulWidget {
@@ -193,9 +194,7 @@ class _DokterPageState extends State<DokterPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             ListTile(
-                              leading: const Icon(
-                                Icons.add,
-                              ),
+                              leading: const FaIcon(FontAwesomeIcons.stethoscope),
                               title: Text(_dataDokter[i]['nm_dokter']),
                               subtitle: Text(
                                   getNamaPoli(_dataDokter[i]['jadwal_poli'])),

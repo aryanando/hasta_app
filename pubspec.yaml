@@ -50,6 +50,7 @@ dependencies:
   persistent_bottom_nav_bar: ^5.0.2
   persistent_bottom_nav_bar_v2: ^5.2.0
   change_app_package_name: ^1.1.0
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
