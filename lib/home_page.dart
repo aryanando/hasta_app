@@ -510,8 +510,8 @@ class _HomePageState extends State<HomePage> {
               child: Text('data'),
             ),
             item: ItemConfig(
-              icon: const Icon(Icons.message),
-              title: "Messages",
+              icon: const Icon(Icons.tag_faces),
+              title: "Profil",
             ),
           ),
           // PersistentTabConfig(
