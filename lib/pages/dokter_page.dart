@@ -151,15 +151,15 @@ class _DokterPageState extends State<DokterPage> {
   String getNamaPoli(List dataDokter) {
     Map jadwal = {};
     int i = -1;
-    dataDokter.forEach((data) => {jadwal[i += 1] = data});
-    Map nm_pol = (jadwal[0]['poli_klinik']);
-    return nm_pol['nm_poli'];
+    for (var data in dataDokter) {jadwal[i += 1] = data;}
+    Map nmPol = (jadwal[0]['poli_klinik']);
+    return nmPol['nm_poli'];
   }
 
   bool jadwalDokterPoli(List jadwalDokter) {
     Map jadwal = {};
     int i = -1;
-    jadwalDokter.forEach((data) => {jadwal[i += 1] = data});
+    for (var data in jadwalDokter) {jadwal[i += 1] = data;}
     setState(() {
       _jadwal = jadwal;
     });
