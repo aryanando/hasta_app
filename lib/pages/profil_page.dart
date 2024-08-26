@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hasta_app/widget/number_widget.dart';
 
 class ProfilPage extends StatefulWidget {
   final String name;
@@ -32,6 +33,10 @@ class _ProfilPageState extends State<ProfilPage> {
             height: 24,
           ),
           nameWidget(widget.name, widget.email),
+          const SizedBox(
+            height: 24,
+          ),
+          NumbersWidget()
         ],
       ),
     );
