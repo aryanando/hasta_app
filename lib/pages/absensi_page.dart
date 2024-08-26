@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hasta_app/welcome_screen.dart';
+import 'package:hasta_app/widget/number_home_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -102,7 +103,6 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0)),
             child: Container(
-              
               constraints: BoxConstraints(maxHeight: 150),
               child: InkWell(
                 onTap: () {
@@ -130,8 +130,10 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
                             Navigator.of(context, rootNavigator: true).pop();
                           },
                           icon: const FaIcon(FontAwesomeIcons.check)),
-                          SizedBox(height: 20,),
-                          Text('Tap to Close!!!')
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text('Tap to Close!!!')
                     ],
                   ),
                 ),
@@ -144,19 +146,53 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xff7fc7d9),
       appBar: AppBar(
         title: const Text('Scan Untuk Masuk'),
       ),
-      body: MobileScanner(
-        // fit: BoxFit.contain,
-        controller: cameraControllerCheckout,
-        onDetect: (capture) {
-          final List<Barcode> barcodes = capture.barcodes;
-          for (final barcode in barcodes) {
-            debugPrint('Barcode found! ${barcode.rawValue}');
-            _absensiHandle(_tokenSecure, barcode.rawValue);
-          }
-        },
+      body: Container(
+        decoration: const BoxDecoration(color: Color(0xff7fc7d9)),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8.0),
+                topRight: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0),
+                bottomLeft: Radius.circular(8.0),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0),
+                    bottomLeft: Radius.circular(8.0),
+                  ),
+                ),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: MobileScanner(
+                    fit: BoxFit.cover,
+                    controller: cameraControllerCheckout,
+                    onDetect: (capture) {
+                      final List<Barcode> barcodes = capture.barcodes;
+                      for (final barcode in barcodes) {
+                        debugPrint('Barcode found! ${barcode.rawValue}');
+                        _absensiHandle(_tokenSecure, barcode.rawValue);
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20,),
+            NumbersHomeWidget()
+          ],
+        ),
       ),
     );
   }

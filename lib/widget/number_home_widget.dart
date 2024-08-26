@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-class NumbersWidget extends StatefulWidget {
+class NumbersHomeWidget extends StatefulWidget {
   @override
-  State<NumbersWidget> createState() => _NumbersWidgetState();
+  State<NumbersHomeWidget> createState() => _NumbersHomeWidgetState();
 }
 
-class _NumbersWidgetState extends State<NumbersWidget> {
+class _NumbersHomeWidgetState extends State<NumbersHomeWidget> {
   final storage = const FlutterSecureStorage();
   String _tokenSecure = '';
   String _currentRating = '';
@@ -63,18 +63,20 @@ class _NumbersWidgetState extends State<NumbersWidget> {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(12),
+        // margin: EdgeInsets.all(10),
+        // padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
             color: Color(0xffdddddd), borderRadius: BorderRadius.circular(12)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            buildButton(context, '$_currentRating/5.0', 'Rating'),
+            buildButton(context, '$_currentRating / 5.0', 'Rating:'),
             buildDivider(),
-            buildButton(context, _currentLateCount, 'Terlambat'),
+            buildButton(context, _currentLateCount, 'Terlambat:'),
             buildDivider(),
-            buildButton(context, _countShifts, 'Masuk'),
+            buildButton(context, _countShifts, 'Masuk:'),
+            // buildDivider(),
+            // buildButton(context, _countShifts, 'Tidak Absen:'),
           ],
         ),
       );
@@ -94,17 +96,11 @@ class _NumbersWidgetState extends State<NumbersWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Text(
-              value,
+              '$text $value',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 24,
+                  fontSize: 12,
                   color: Colors.black),
-            ),
-            SizedBox(height: 2),
-            Text(
-              text,
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
             ),
           ],
         ),

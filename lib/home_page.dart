@@ -7,6 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/components/absensi_notif_card.dart';
 import 'package:hasta_app/components/image_button.dart';
 import 'package:hasta_app/pages/profil_page.dart';
+import 'package:hasta_app/widget/number_home_widget.dart';
+import 'package:hasta_app/widget/number_widget.dart';
 import 'login_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -224,6 +226,10 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(
                             height: 10,
                           ),
+                          NumbersHomeWidget(),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           ListView(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
@@ -336,7 +342,15 @@ class _HomePageState extends State<HomePage> {
                             topLeft: Radius.circular(50),
                             topRight: Radius.circular(50)),
                         child: Container(
-                          color: const Color(0xffdcf2f1),
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage("assets/backgrounds/rs_01.png"),
+                              fit: BoxFit.cover,
+                              // colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                            ),
+                            color: Color(0xffdcf2f1),
+                          ),
+                          // color: const Color(0xffdcf2f1),
                           child: Center(
                             child: Padding(
                               padding: const EdgeInsets.all(30.0),

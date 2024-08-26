@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool passwordHidden = true;
+  bool passwordHidden = true, _isLoading = false;
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
@@ -60,6 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
       debugPrint(apiUrl);
       print(response.statusCode);
       setState(() {
+        _isLoading = false;
         loginStatus = const Text("Sandi Atau Email Salah!..",
             style: TextStyle(color: Colors.red));
       });
@@ -175,15 +176,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 55,
                         width: 300,
                         child: Center(
-                          child: ElevatedButton(
+                          child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
                                 shadowColor: Colors.transparent),
                             onPressed: () {
+                              setState(() => _isLoading = true);
                               login(emailController.text,
                                   passwordController.text);
                             },
-                            child: const Text(
+                            icon: _isLoading
+                                ? Container(
+                                    width: 24,
+                                    height: 24,
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: const CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3,
+                                    ),
+                                  )
+                                : const Icon(Icons.login, color: Colors.white,),
+                            label: const Text(
                               'Masuk',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -196,37 +209,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 150,
                       ),
-                      // Align(
-                      //   alignment: Alignment.bottomRight,
-                      //   child: Column(
-                      //     mainAxisAlignment: MainAxisAlignment.end,
-                      //     crossAxisAlignment: CrossAxisAlignment.end,
-                      //     children: [
-                      //       const Text(
-                      //         "Belum punya akun?",
-                      //         style: TextStyle(
-                      //             fontWeight: FontWeight.bold,
-                      //             color: Colors.grey),
-                      //       ),
-                      //       GestureDetector(
-                      //         onTap: () {
-                      //           Navigator.push(
-                      //               context,
-                      //               MaterialPageRoute(
-                      //                   builder: (context) =>
-                      //                       const RegScreen()));
-                      //         },
-                      //         child: const Text(
-                      //           "Daftar",
-                      //           style: TextStyle(
-                      //               fontWeight: FontWeight.bold,
-                      //               fontSize: 17,
-                      //               color: Colors.black),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // )
                     ],
                   ),
                 ),
