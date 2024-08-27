@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -19,11 +20,14 @@ class _GajiPageState extends State<GajiPage> {
   var month = DateTime.now();
   Map _dataPendapatan = {};
   Map _dataPendapatanAll = {};
+  List<DropdownMenuItem<int>> _bulanSlip = [
+    const DropdownMenuItem(value: 0, child: Text("Wait")),
+    const DropdownMenuItem(value: 1, child: Text("Wait")),
+  ];
+
+  
   List<DropdownMenuItem<int>> get dropdownItems {
-    List<DropdownMenuItem<int>> menuItems = [
-      const DropdownMenuItem(value: 0, child: Text("Juli 2024")),
-      const DropdownMenuItem(value: 1, child: Text("Agustus 2024")),
-    ];
+    List<DropdownMenuItem<int>> menuItems = _bulanSlip;
     return menuItems;
   }
 
@@ -59,7 +63,14 @@ class _GajiPageState extends State<GajiPage> {
         });
         setState(() {
           int i = -1;
-          dataPendapatan.forEach((data) => {_dataPendapatanAll[i+=1] = data});
+          int j = -1;
+          String bulan = '';
+          _bulanSlip = [];
+          dataPendapatan.forEach((data) => {
+                bulan = DateFormat('MMMM').format(DateTime(0, data['bulan'])),
+                _dataPendapatanAll[i += 1] = data,
+                _bulanSlip.add(DropdownMenuItem(value: j+=1, child: Text("$bulan 2024")))
+              });
         });
       } else {
         debugPrint(apiUrl);
