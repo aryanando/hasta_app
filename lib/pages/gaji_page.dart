@@ -24,8 +24,8 @@ class _GajiPageState extends State<GajiPage> {
     const DropdownMenuItem(value: 0, child: Text("Wait")),
     const DropdownMenuItem(value: 1, child: Text("Wait")),
   ];
+  int selectedValue = 1;
 
-  
   List<DropdownMenuItem<int>> get dropdownItems {
     List<DropdownMenuItem<int>> menuItems = _bulanSlip;
     return menuItems;
@@ -59,9 +59,6 @@ class _GajiPageState extends State<GajiPage> {
         // print(dataPendapatan);
 
         setState(() {
-          _dataPendapatan = dataPendapatan[1];
-        });
-        setState(() {
           int i = -1;
           int j = -1;
           String bulan = '';
@@ -69,8 +66,11 @@ class _GajiPageState extends State<GajiPage> {
           dataPendapatan.forEach((data) => {
                 bulan = DateFormat('MMMM').format(DateTime(0, data['bulan'])),
                 _dataPendapatanAll[i += 1] = data,
-                _bulanSlip.add(DropdownMenuItem(value: j+=1, child: Text("$bulan 2024")))
+                _bulanSlip.add(
+                    DropdownMenuItem(value: j += 1, child: Text("$bulan 2024")))
               });
+          selectedValue = j;
+          _dataPendapatan = dataPendapatan[j];
         });
       } else {
         debugPrint(apiUrl);
@@ -96,8 +96,6 @@ class _GajiPageState extends State<GajiPage> {
 
     return formattedAmount.replaceAll(',00', '');
   }
-
-  int selectedValue = 1;
 
   @override
   Widget build(BuildContext context) {
