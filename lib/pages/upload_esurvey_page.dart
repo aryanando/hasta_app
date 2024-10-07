@@ -27,6 +27,7 @@ class UploadEsurveyPage extends StatefulWidget {
 class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
   List<XFile>? _mediaFileList;
   bool _isLoaded = false;
+  bool _alreadyUpload = false;
   String? _tokenSecure;
   final storage = const FlutterSecureStorage();
 
@@ -45,6 +46,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
     setState(() {
       _tokenSecure = tokenSecure;
     });
+    getDataUpload();
   }
 
   @override
@@ -55,6 +57,36 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
 
   void _setImageFileListFromFile(XFile? value) {
     _mediaFileList = value == null ? null : <XFile>[value];
+  }
+
+  Future<void> getDataUpload() async {
+    String apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/esurvey';
+    try {
+      final response = await http.get(Uri.parse(apiUrl), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $_tokenSecure',
+      });
+
+      if (response.statusCode == 200) {
+        //mengabil data user
+        final dataUpload = json.decode(response.body)['data'];
+        // print(dataUpload);
+
+        setState(() {
+          if (dataUpload['alreadyUp'] == 1) {
+            _alreadyUpload = true;
+          }
+        });
+      } else {
+        debugPrint(apiUrl);
+        print(response.statusCode);
+      }
+    } catch (e) {
+      if (!context.mounted) {
+        return;
+      } else {}
+    }
   }
 
   Future<void> uploadFile(XFile file) async {
@@ -99,7 +131,6 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
               pickedFileList.add(media);
               setState(() {
                 _mediaFileList = pickedFileList;
-                _isLoaded = true;
               });
             }
           } catch (e) {
@@ -119,7 +150,6 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
               imageQuality: quality,
             );
             setState(() {
-              _isLoaded = true;
               print(pickedFile?.path ?? 'path');
               _setImageFileListFromFile(pickedFile);
             });
@@ -147,6 +177,9 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
       return retrieveError;
     }
     if (_mediaFileList != null) {
+      setState(() {
+        _isLoaded = true;
+      });
       return Semantics(
         label: 'image_picker_example_picked_images',
         child: ListView.builder(
@@ -217,35 +250,53 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
         title: Text("Upload E-Survey"),
       ),
       body: Center(
-        child: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-            ? FutureBuilder<void>(
-                future: retrieveLostData(),
-                builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                      return const Text(
-                        'You have not yet picked an image.',
-                        textAlign: TextAlign.center,
-                      );
-                    case ConnectionState.done:
-                      return _handlePreview();
-                    case ConnectionState.active:
-                      if (snapshot.hasError) {
-                        return Text(
-                          'Pick image error: ${snapshot.error}}',
-                          textAlign: TextAlign.center,
-                        );
-                      } else {
-                        return const Text(
-                          'You have not yet picked an image.',
-                          textAlign: TextAlign.center,
-                        );
-                      }
-                  }
+        child: _alreadyUpload
+            ? Image.network(
+                "https://picsum.photos/200/300",
+                fit: BoxFit.fill,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
                 },
               )
-            : _handlePreview(),
+            : !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+                ? FutureBuilder<void>(
+                    future: retrieveLostData(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<void> snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.none:
+                        case ConnectionState.waiting:
+                          return const Text(
+                            'You have not yet picked an image.',
+                            textAlign: TextAlign.center,
+                          );
+                        case ConnectionState.done:
+                          return _handlePreview();
+                        case ConnectionState.active:
+                          if (snapshot.hasError) {
+                            return Text(
+                              'Pick image error: ${snapshot.error}}',
+                              textAlign: TextAlign.center,
+                            );
+                          } else {
+                            return const Text(
+                              'You have not yet picked an image.',
+                              textAlign: TextAlign.center,
+                            );
+                          }
+                      }
+                    },
+                  )
+                : _handlePreview(),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -265,18 +316,19 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
                 ),
               ),
             ),
-          Semantics(
-            label: 'image_picker_example_from_gallery',
-            child: FloatingActionButton(
-              onPressed: () {
-                isVideo = false;
-                _onImageButtonPressed(ImageSource.gallery, context: context);
-              },
-              heroTag: 'image0',
-              tooltip: 'Pick Image from gallery',
-              child: const Icon(Icons.photo),
+          if (!_alreadyUpload)
+            Semantics(
+              label: 'image_picker_example_from_gallery',
+              child: FloatingActionButton(
+                onPressed: () {
+                  isVideo = false;
+                  _onImageButtonPressed(ImageSource.gallery, context: context);
+                },
+                heroTag: 'image0',
+                tooltip: 'Pick Image from gallery',
+                child: const Icon(Icons.photo),
+              ),
             ),
-          ),
         ],
       ),
     );
