@@ -36,7 +36,14 @@ class _ProfilPageState extends State<ProfilPage> {
           const SizedBox(
             height: 24,
           ),
-          NumbersWidget()
+          NumbersWidget(),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/upload-esurvey');
+            },
+            child: const Text('Upload E-Survey'),
+          ),
         ],
       ),
     );

@@ -8,9 +8,9 @@ import 'package:hasta_app/pages/gaji_page.dart';
 import 'package:hasta_app/pages/jadwal_page.dart';
 import 'package:hasta_app/pages/ralan_page.dart';
 import 'package:hasta_app/pages/ranap_page.dart';
+import 'package:hasta_app/pages/upload_esurvey_page.dart';
 import 'package:hasta_app/reg_screen.dart';
 import 'package:hasta_app/splash_screen.dart';
-
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/gaji': (context) => const GajiPage(),
         '/ralan': (context) => const RalanPage(),
         '/dokter': (context) => const DokterPage(),
+        '/upload-esurvey': (context) => const UploadEsurveyPage(),
       },
     );
   }
