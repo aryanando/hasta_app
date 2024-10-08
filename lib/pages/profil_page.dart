@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/widget/number_widget.dart';
+import 'package:http/http.dart' as http;
 
 class ProfilPage extends StatefulWidget {
   final String name;
@@ -17,6 +21,56 @@ class ProfilPage extends StatefulWidget {
 
 class _ProfilPageState extends State<ProfilPage> {
   get onClicked => null;
+  bool _alreadyUpload = false;
+  String _dataUploadImage = '';
+  String? _tokenSecure;
+  final storage = const FlutterSecureStorage();
+
+  void _loadPreferences() async {
+    final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
+    setState(() {
+      _tokenSecure = tokenSecure;
+    });
+    getDataUpload();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> getDataUpload() async {
+    String apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/esurvey';
+    try {
+      final response = await http.get(Uri.parse(apiUrl), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $_tokenSecure',
+      });
+
+      if (response.statusCode == 200) {
+        //mengabil data user
+        final dataUpload = json.decode(response.body)['data'];
+        String link = (dataUpload['esurvey'][0]['image']);
+
+        setState(() {
+          if (dataUpload['alreadyUp'] == 1) {
+            _alreadyUpload = true;
+            _dataUploadImage = "${const String.fromEnvironment('devUrl')}$link";
+            print(_dataUploadImage);
+          }
+        });
+      } else {
+        debugPrint(apiUrl);
+        print(response.statusCode);
+      }
+    } catch (e) {
+      if (!context.mounted) {
+        return;
+      } else {}
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +92,28 @@ class _ProfilPageState extends State<ProfilPage> {
           ),
           NumbersWidget(),
           const SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/upload-esurvey');
-            },
-            child: const Text('Upload E-Survey'),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0, left: 8.0),
+            child: ElevatedButton.icon(
+              icon: _alreadyUpload
+                  ? const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                    )
+                  : const Icon(
+                      Icons.upload,
+                      color: Colors.red,
+                    ),
+              onPressed: () async {
+                await Navigator.pushNamed(context, '/upload-esurvey')
+                    .then((value) {
+                  getDataUpload();
+                });
+              },
+              label: Text(_alreadyUpload
+                  ? 'Anda sudah upload E-Survey'
+                  : 'Upload E-Survey'),
+            ),
           ),
         ],
       ),

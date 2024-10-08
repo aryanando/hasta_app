@@ -28,6 +28,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
   List<XFile>? _mediaFileList;
   bool _isLoaded = false;
   bool _alreadyUpload = false;
+  bool _isLoading = false;
   String _dataUploadImage = '';
   String? _tokenSecure;
   final storage = const FlutterSecureStorage();
@@ -42,6 +43,10 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
   final TextEditingController qualityController = TextEditingController();
   final TextEditingController limitController = TextEditingController();
 
+  void _setImageFileListFromFile(XFile? value) {
+    _mediaFileList = value == null ? null : <XFile>[value];
+  }
+
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     setState(() {
@@ -54,10 +59,6 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
   void initState() {
     super.initState();
     _loadPreferences();
-  }
-
-  void _setImageFileListFromFile(XFile? value) {
-    _mediaFileList = value == null ? null : <XFile>[value];
   }
 
   Future<void> getDataUpload() async {
@@ -107,6 +108,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
     if (response.statusCode == 200) {
       var responseData = await http.Response.fromStream(response);
       var resBody = jsonDecode(responseData.body);
+      Navigator.pop(context);
       print(resBody);
     } else {
       print(response.statusCode);
@@ -135,6 +137,9 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
               setState(() {
                 _mediaFileList = pickedFileList;
               });
+              setState(() {
+                _isLoaded = true;
+              });
             }
           } catch (e) {
             setState(() {
@@ -155,6 +160,9 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
             setState(() {
               print(pickedFile?.path ?? 'path');
               _setImageFileListFromFile(pickedFile);
+            });
+            setState(() {
+              _isLoaded = true;
             });
           } catch (e) {
             setState(() {
@@ -180,9 +188,6 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
       return retrieveError;
     }
     if (_mediaFileList != null) {
-      setState(() {
-        _isLoaded = true;
-      });
       return Semantics(
         label: 'image_picker_example_picked_images',
         child: ListView.builder(
@@ -257,21 +262,32 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
             ? Column(
                 children: [
                   const CardStatus(),
-                  Image.network(
-                    _dataUploadImage,
-                    fit: BoxFit.fill,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0, left: 8.0),
+                    child: SizedBox(
+                      height: 300,
+                      child: ListView(
+                        children: <Widget>[
+                          Image.network(
+                            _dataUploadImage,
+                            fit: BoxFit.fill,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   )
                 ],
               )
@@ -316,11 +332,22 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
                 label: 'image_picker_example_from_gallery',
                 child: FloatingActionButton(
                   onPressed: () {
+                    setState(() => _isLoading = true);
                     uploadFile(_mediaFileList![0]);
                   },
-                  heroTag: 'image0',
+                  heroTag: 'uploadKirim',
                   tooltip: 'Kirim',
-                  child: const Icon(Icons.send),
+                  child: _isLoading
+                      ? Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        )
+                      : const Icon(Icons.send),
                 ),
               ),
             ),
