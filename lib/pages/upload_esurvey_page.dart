@@ -28,6 +28,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
   List<XFile>? _mediaFileList;
   bool _isLoaded = false;
   bool _alreadyUpload = false;
+  String _dataUploadImage = '';
   String? _tokenSecure;
   final storage = const FlutterSecureStorage();
 
@@ -71,11 +72,13 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
       if (response.statusCode == 200) {
         //mengabil data user
         final dataUpload = json.decode(response.body)['data'];
-        // print(dataUpload);
+        String link = (dataUpload['esurvey'][0]['image']);
 
         setState(() {
           if (dataUpload['alreadyUp'] == 1) {
             _alreadyUpload = true;
+            _dataUploadImage = "${const String.fromEnvironment('devUrl')}$link";
+            print(_dataUploadImage);
           }
         });
       } else {
@@ -198,7 +201,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
                       errorBuilder: (BuildContext context, Object error,
                           StackTrace? stackTrace) {
                         return const Center(
-                            child: Text('This image type is not supported'));
+                            child: Text('Tipe gambar ini tidak didukung'));
                       },
                     ),
             );
@@ -208,12 +211,12 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
       );
     } else if (_pickImageError != null) {
       return Text(
-        'Pick image error: $_pickImageError',
+        'Gagal memilih gambar: $_pickImageError',
         textAlign: TextAlign.center,
       );
     } else {
       return const Text(
-        'You have not yet picked an image.',
+        'Silahkan pilih gambar yang akan diupload.',
         textAlign: TextAlign.center,
       );
     }
@@ -251,21 +254,26 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
       ),
       body: Center(
         child: _alreadyUpload
-            ? Image.network(
-                "https://picsum.photos/200/300",
-                fit: BoxFit.fill,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
+            ? Column(
+                children: [
+                  const CardStatus(),
+                  Image.network(
+                    _dataUploadImage,
+                    fit: BoxFit.fill,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                  )
+                ],
               )
             : !kIsWeb && defaultTargetPlatform == TargetPlatform.android
                 ? FutureBuilder<void>(
@@ -276,7 +284,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
                         case ConnectionState.none:
                         case ConnectionState.waiting:
                           return const Text(
-                            'You have not yet picked an image.',
+                            'Silahkan pilih file screenshot.',
                             textAlign: TextAlign.center,
                           );
                         case ConnectionState.done:
@@ -284,12 +292,12 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
                         case ConnectionState.active:
                           if (snapshot.hasError) {
                             return Text(
-                              'Pick image error: ${snapshot.error}}',
+                              'Gambar gagal dipilih: ${snapshot.error}}',
                               textAlign: TextAlign.center,
                             );
                           } else {
                             return const Text(
-                              'You have not yet picked an image.',
+                              'Silahkan pilih file screenshot.',
                               textAlign: TextAlign.center,
                             );
                           }
@@ -371,3 +379,28 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
 
 typedef OnPickImageCallback = void Function(
     double? maxWidth, double? maxHeight, int? quality, int? limit);
+
+class CardStatus extends StatelessWidget {
+  const CardStatus({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(
+                Icons.check_circle,
+                color: Colors.green,
+              ),
+              title: Text('Anda telah mengirim bukti E-Survey'),
+              subtitle: Text('Terimakasih telah mengirim E-Survey Tepat Waktu'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
