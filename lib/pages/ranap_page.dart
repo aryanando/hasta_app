@@ -207,26 +207,26 @@ class ActorItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(1.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 10,
-            ),
-            Icon(
-              Icons.bed_rounded,
-              color: Colors.yellow[700],
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 10,
+          ),
+          Icon(
+            Icons.bed_rounded,
+            color: Colors.yellow[700],
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -260,8 +260,8 @@ class ActorItem extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

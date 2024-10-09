@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
   String _cardTittle = "";
   String _cardMessage = "";
   String _absensiState = "/absensi-cam";
+  bool _alreadyUpload = false;
   Map _dataPengumuman = {};
 
   final storage = const FlutterSecureStorage();
@@ -52,6 +53,7 @@ class _HomePageState extends State<HomePage> {
     print("--------------- You're in Home Page ---------------");
     getAbsensiData(_tokenSecure);
     getPengumuman(_tokenSecure);
+    getDataUpload();
   }
 
   Future<void> getPengumuman(String? myToken) async {
@@ -72,6 +74,36 @@ class _HomePageState extends State<HomePage> {
           int i = -1;
           dataPengumuman.forEach((data) => {_dataPengumuman[i += 1] = data});
           print(_dataPengumuman);
+        });
+      } else {
+        debugPrint(apiUrl);
+        print(response.statusCode);
+      }
+    } catch (e) {
+      if (!context.mounted) {
+        return;
+      } else {}
+    }
+  }
+
+  Future<void> getDataUpload() async {
+    String apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/esurvey';
+    try {
+      final response = await http.get(Uri.parse(apiUrl), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $_tokenSecure',
+      });
+
+      if (response.statusCode == 200) {
+        //mengabil data user
+        final dataUpload = json.decode(response.body)['data'];
+        String link = (dataUpload['esurvey'][0]['image']);
+
+        setState(() {
+          if (dataUpload['alreadyUp'] == 1) {
+            _alreadyUpload = true;
+          }
         });
       } else {
         debugPrint(apiUrl);
@@ -334,7 +366,33 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(
-                      height: 25,
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0, left: 8.0),
+                      child: ElevatedButton.icon(
+                        icon: _alreadyUpload
+                            ? const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              )
+                            : const Icon(
+                                Icons.upload,
+                                color: Colors.red,
+                              ),
+                        onPressed: () async {
+                          await Navigator.pushNamed(context, '/upload-esurvey')
+                              .then((value) {
+                            getDataUpload();
+                          });
+                        },
+                        label: Text(_alreadyUpload
+                            ? 'Anda sudah upload E-Survey'
+                            : 'Upload E-Survey'),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
                     ),
                     Expanded(
                       child: ClipRRect(

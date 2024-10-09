@@ -91,7 +91,7 @@ class _ProfilPageState extends State<ProfilPage> {
             height: 24,
           ),
           NumbersWidget(),
-          const SizedBox(height: 30),
+          const SizedBox(height: 5),
           Padding(
             padding: const EdgeInsets.only(right: 8.0, left: 8.0),
             child: ElevatedButton.icon(
