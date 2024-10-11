@@ -34,7 +34,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     final userShiftID = await storage.read(key: 'userShiftId') ?? "{}";
-    print(userShiftID);
+    // print(userShiftID);
     setState(() {
       _tokenSecure = tokenSecure;
       _userShiftID = userShiftID;
@@ -74,7 +74,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
 
         if (response.statusCode == 200) {
           //menyimpan data token
-          print(response.body);
+          // print(response.body);
 
           setState(() {
             _isValidQr = 1;
@@ -86,7 +86,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
           //berpindah halaman
         } else {
           debugPrint(apiUrl);
-          print(response.statusCode);
+          // print(response.statusCode);
         }
       } catch (e) {
         debugPrint(e.toString());
@@ -99,11 +99,11 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
         context: context,
         builder: (BuildContext context) {
           return Dialog(
-            backgroundColor: Color.fromARGB(255, 165, 240, 136),
+            backgroundColor: const Color.fromARGB(255, 165, 240, 136),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0)),
             child: Container(
-              constraints: BoxConstraints(maxHeight: 150),
+              constraints: const BoxConstraints(maxHeight: 150),
               child: InkWell(
                 onTap: () {
                   Navigator.of(context, rootNavigator: true).pop();
@@ -116,7 +116,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
                     children: [
                       RichText(
                         textAlign: TextAlign.justify,
-                        text: TextSpan(
+                        text: const TextSpan(
                             text: "Success !!!",
                             style: TextStyle(
                                 fontWeight: FontWeight.w400,
@@ -130,10 +130,10 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
                             Navigator.of(context, rootNavigator: true).pop();
                           },
                           icon: const FaIcon(FontAwesomeIcons.check)),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
-                      Text('Tap to Close!!!')
+                      const Text('Tap to Close!!!')
                     ],
                   ),
                 ),
@@ -189,8 +189,10 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 20,),
-            NumbersHomeWidget()
+            const SizedBox(
+              height: 20,
+            ),
+            const NumbersHomeWidget()
           ],
         ),
       ),

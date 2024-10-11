@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hasta_app/login_screen.dart';
 
 class RegScreen extends StatelessWidget {
-  const RegScreen({Key? key}) : super(key: key);
+  const RegScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

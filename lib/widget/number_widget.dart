@@ -5,6 +5,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class NumbersWidget extends StatefulWidget {
+  const NumbersWidget({super.key});
+
   @override
   State<NumbersWidget> createState() => _NumbersWidgetState();
 }
@@ -43,16 +45,16 @@ class _NumbersWidgetState extends State<NumbersWidget> {
 
       if (response.statusCode == 200) {
         final dataPengumuman = json.decode(response.body)['data'];
-        print(dataPengumuman['currentMonthRating']);
+        // print(dataPengumuman['currentMonthRating']);
         setState(() {
           _currentRating = dataPengumuman['currentMonthRating'].toString();
           _currentLateCount = dataPengumuman['currentMonthLate'].toString();
           _countShifts = dataPengumuman['countShifts'].toString();
         });
-        print(_currentRating);
+        // print(_currentRating);
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -63,10 +65,11 @@ class _NumbersWidgetState extends State<NumbersWidget> {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(12),
+        margin: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-            color: Color(0xffdddddd), borderRadius: BorderRadius.circular(12)),
+            color: const Color(0xffdddddd),
+            borderRadius: BorderRadius.circular(12)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -79,14 +82,14 @@ class _NumbersWidgetState extends State<NumbersWidget> {
         ),
       );
 
-  Widget buildDivider() => Container(
+  Widget buildDivider() => const SizedBox(
         height: 24,
         child: VerticalDivider(),
       );
 
   Widget buildButton(BuildContext context, String value, String text) =>
       MaterialButton(
-        padding: EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         onPressed: () {},
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         child: Column(
@@ -95,16 +98,16 @@ class _NumbersWidgetState extends State<NumbersWidget> {
           children: <Widget>[
             Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
                   color: Colors.black),
             ),
-            SizedBox(height: 2),
+            const SizedBox(height: 2),
             Text(
               text,
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.black),
             ),
           ],
         ),

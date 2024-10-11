@@ -60,13 +60,13 @@ class _JadwalPageState extends State<JadwalPage> {
       if (response.statusCode == 200) {
         //mengabil data user
         final dataAbsensiBulanIni = json.decode(response.body)['data'];
-        print(dataAbsensiBulanIni);
+        // print(dataAbsensiBulanIni);
         setState(() {
           _dataAbsensiBulanIni = (dataAbsensiBulanIni['user-shift']);
         });
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {

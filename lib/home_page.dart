@@ -8,7 +8,6 @@ import 'package:hasta_app/components/absensi_notif_card.dart';
 import 'package:hasta_app/components/image_button.dart';
 import 'package:hasta_app/pages/profil_page.dart';
 import 'package:hasta_app/widget/number_home_widget.dart';
-import 'package:hasta_app/widget/number_widget.dart';
 import 'login_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -38,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   String _cardMessage = "";
   String _absensiState = "/absensi-cam";
   bool _alreadyUpload = false;
-  Map _dataPengumuman = {};
+  final Map _dataPengumuman = {};
 
   final storage = const FlutterSecureStorage();
 
@@ -50,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     });
     // print('Token Anda Adalah: $_token');
     // print('Token Anda Adalah Secure: $_tokenSecure');
-    print("--------------- You're in Home Page ---------------");
+    // print("--------------- You're in Home Page ---------------");
     getAbsensiData(_tokenSecure);
     getPengumuman(_tokenSecure);
     getDataUpload();
@@ -73,11 +72,11 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           int i = -1;
           dataPengumuman.forEach((data) => {_dataPengumuman[i += 1] = data});
-          print(_dataPengumuman);
+          // print(_dataPengumuman);
         });
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -98,7 +97,6 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         //mengabil data user
         final dataUpload = json.decode(response.body)['data'];
-        String link = (dataUpload['esurvey'][0]['image']);
 
         setState(() {
           if (dataUpload['alreadyUp'] == 1) {
@@ -107,7 +105,7 @@ class _HomePageState extends State<HomePage> {
         });
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -137,7 +135,7 @@ class _HomePageState extends State<HomePage> {
       'Content-Type': 'application/json',
     };
 
-    final response = await http.post(Uri.parse(url), headers: headers);
+    await http.post(Uri.parse(url), headers: headers);
     await storage.deleteAll();
 
     // print(response.body);
@@ -161,10 +159,10 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final dataAbsensiHariIni = json.decode(response.body)['data'];
 
-        print(dataAbsensiHariIni['id']);
+        // print(dataAbsensiHariIni['id']);
 
         if (dataAbsensiHariIni['check_in'] == null) {
-          print('Belum Absen Masuk');
+          // print('Belum Absen Masuk');
           setState(() {
             _cardColor = 0xffffbaba;
             _cardTittle = "Anda Belum Absen";
@@ -174,7 +172,7 @@ class _HomePageState extends State<HomePage> {
           await storage.write(
               key: 'userShiftId', value: jsonEncode(dataAbsensiHariIni['id']));
         } else if (dataAbsensiHariIni['check_out'] == null) {
-          print('Belum Absen Pulang');
+          // print('Belum Absen Pulang');
           setState(() {
             _cardColor = 0xffa4ffa4;
             _cardTittle = "Anda Telah Checkin";
@@ -184,7 +182,7 @@ class _HomePageState extends State<HomePage> {
           await storage.write(
               key: 'userShiftId', value: jsonEncode(dataAbsensiHariIni['id']));
         } else {
-          print('Sudah Pulang');
+          // print('Sudah Pulang');
           setState(() {
             _cardColor = 0xff91d2ff;
             _cardTittle = "Anda Telah Checkout";
@@ -194,7 +192,7 @@ class _HomePageState extends State<HomePage> {
         }
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -258,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(
                             height: 10,
                           ),
-                          NumbersHomeWidget(),
+                          const NumbersHomeWidget(),
                           const SizedBox(
                             height: 10,
                           ),

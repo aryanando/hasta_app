@@ -22,7 +22,6 @@ class ProfilPage extends StatefulWidget {
 class _ProfilPageState extends State<ProfilPage> {
   get onClicked => null;
   bool _alreadyUpload = false;
-  String _dataUploadImage = '';
   String? _tokenSecure;
   final storage = const FlutterSecureStorage();
 
@@ -52,18 +51,16 @@ class _ProfilPageState extends State<ProfilPage> {
       if (response.statusCode == 200) {
         //mengabil data user
         final dataUpload = json.decode(response.body)['data'];
-        String link = (dataUpload['esurvey'][0]['image']);
 
         setState(() {
           if (dataUpload['alreadyUp'] == 1) {
             _alreadyUpload = true;
-            _dataUploadImage = "${const String.fromEnvironment('devUrl')}$link";
-            print(_dataUploadImage);
+            // print(_dataUploadImage);
           }
         });
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -90,7 +87,7 @@ class _ProfilPageState extends State<ProfilPage> {
           const SizedBox(
             height: 24,
           ),
-          NumbersWidget(),
+          const NumbersWidget(),
           const SizedBox(height: 5),
           Padding(
             padding: const EdgeInsets.only(right: 8.0, left: 8.0),

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -19,7 +18,7 @@ class _GajiPageState extends State<GajiPage> {
   final storage = const FlutterSecureStorage();
   var month = DateTime.now();
   Map _dataPendapatan = {};
-  Map _dataPendapatanAll = {};
+  final Map _dataPendapatanAll = {};
   List<DropdownMenuItem<int>> _bulanSlip = [
     const DropdownMenuItem(value: 0, child: Text("Wait")),
     const DropdownMenuItem(value: 1, child: Text("Wait")),
@@ -74,7 +73,7 @@ class _GajiPageState extends State<GajiPage> {
         });
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -82,8 +81,8 @@ class _GajiPageState extends State<GajiPage> {
       } else {}
     }
 
-    print("--------------- You're in Salary Page ---------------");
-    print(_dataPendapatanAll);
+    // print("--------------- You're in Salary Page ---------------");
+    // print(_dataPendapatanAll);
   }
 
   String convertToIDR(String amount) {

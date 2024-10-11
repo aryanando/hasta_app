@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       debugPrint(apiUrl);
-      print(response.statusCode);
+      // print(response.statusCode);
       setState(() {
         _isLoading = false;
         loginStatus = const Text("Sandi Atau Email Salah!..",
@@ -172,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 70,
                       ),
-                      Container(
+                      SizedBox(
                         height: 55,
                         width: 300,
                         child: Center(
@@ -195,7 +195,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       strokeWidth: 3,
                                     ),
                                   )
-                                : const Icon(Icons.login, color: Colors.white,),
+                                : const Icon(
+                                    Icons.login,
+                                    color: Colors.white,
+                                  ),
                             label: const Text(
                               'Masuk',
                               style: TextStyle(

@@ -15,7 +15,7 @@ class DokterPage extends StatefulWidget {
 class _DokterPageState extends State<DokterPage> {
   String? _tokenSecure;
   final storage = const FlutterSecureStorage();
-  Map _dataDokter = {};
+  final Map _dataDokter = {};
   Map _jadwal = {};
 
   @override
@@ -54,7 +54,7 @@ class _DokterPageState extends State<DokterPage> {
         });
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -95,7 +95,8 @@ class _DokterPageState extends State<DokterPage> {
                     fontSize: 20),
               ),
               elevation: 0.0),
-          backgroundColor: Color.fromARGB(192, 148, 199, 223).withOpacity(0.90),
+          backgroundColor:
+              const Color.fromARGB(192, 148, 199, 223).withOpacity(0.90),
           body: Container(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             decoration: const BoxDecoration(
@@ -110,36 +111,37 @@ class _DokterPageState extends State<DokterPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 for (var i = 0; i < _jadwal.length; i++)
-                    Column(
-                      children: [
-                        Center(
-                          child: Card(
-                            child: InkWell(
-                              onTap: () {},
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  ListTile(
-                                    leading: const Icon(
-                                      Icons.calendar_month,
-                                    ),
-                                    title: Text(_jadwal[i]['hari_kerja']),
-                                    subtitle: Text("${_jadwal[i]['jam_mulai']} Sampai Dengan ${_jadwal[i]['jam_selesai']}"),
+                  Column(
+                    children: [
+                      Center(
+                        child: Card(
+                          child: InkWell(
+                            onTap: () {},
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.calendar_month,
                                   ),
-                                  const Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[],
-                                  ),
-                                ],
-                              ),
+                                  title: Text(_jadwal[i]['hari_kerja']),
+                                  subtitle: Text(
+                                      "${_jadwal[i]['jam_mulai']} Sampai Dengan ${_jadwal[i]['jam_selesai']}"),
+                                ),
+                                const Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[],
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 3,
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(
+                        height: 3,
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
@@ -151,7 +153,9 @@ class _DokterPageState extends State<DokterPage> {
   String getNamaPoli(List dataDokter) {
     Map jadwal = {};
     int i = -1;
-    for (var data in dataDokter) {jadwal[i += 1] = data;}
+    for (var data in dataDokter) {
+      jadwal[i += 1] = data;
+    }
     Map nmPol = (jadwal[0]['poli_klinik']);
     return nmPol['nm_poli'];
   }
@@ -159,7 +163,9 @@ class _DokterPageState extends State<DokterPage> {
   bool jadwalDokterPoli(List jadwalDokter) {
     Map jadwal = {};
     int i = -1;
-    for (var data in jadwalDokter) {jadwal[i += 1] = data;}
+    for (var data in jadwalDokter) {
+      jadwal[i += 1] = data;
+    }
     setState(() {
       _jadwal = jadwal;
     });
@@ -194,7 +200,8 @@ class _DokterPageState extends State<DokterPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             ListTile(
-                              leading: const FaIcon(FontAwesomeIcons.stethoscope),
+                              leading:
+                                  const FaIcon(FontAwesomeIcons.stethoscope),
                               title: Text(_dataDokter[i]['nm_dokter']),
                               subtitle: Text(
                                   getNamaPoli(_dataDokter[i]['jadwal_poli'])),

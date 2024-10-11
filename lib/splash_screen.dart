@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (_tokenSecure != "") {
       _checkToken(_tokenSecure);
     } else {
-      print(_tokenSecure);
+      // print(_tokenSecure);
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -93,11 +93,11 @@ class _SplashScreenState extends State<SplashScreen>
         );
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => LoginScreen(),
+            builder: (context) => const LoginScreen(),
           ),
           (route) => false,
         );
@@ -109,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => LoginScreen(),
+            builder: (context) => const LoginScreen(),
           ),
           (route) => false,
         );
@@ -130,7 +130,7 @@ class _SplashScreenState extends State<SplashScreen>
     controller.repeat(reverse: false);
     super.initState();
     Future.delayed(
-      Duration(seconds: 3),
+      const Duration(seconds: 3),
       () {
         _loadPreferences();
       },

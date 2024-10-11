@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -35,7 +34,7 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     final userShiftID = await storage.read(key: 'userShiftId') ?? "{}";
-    print(userShiftID);
+    // print(userShiftID);
     setState(() {
       _tokenSecure = tokenSecure;
       _userShiftID = userShiftID;
@@ -75,7 +74,7 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
 
         if (response.statusCode == 200) {
           //menyimpan data token
-          print(response.body);
+          // print(response.body);
 
           setState(() {
             _isValidQr = 1;
@@ -86,7 +85,7 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
           //berpindah halaman
         } else {
           debugPrint(apiUrl);
-          print(response.statusCode);
+          // print(response.statusCode);
         }
       } catch (e) {
         debugPrint(e.toString());
@@ -189,8 +188,10 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 20,),
-            NumbersHomeWidget()
+            const SizedBox(
+              height: 20,
+            ),
+            const NumbersHomeWidget()
           ],
         ),
       ),

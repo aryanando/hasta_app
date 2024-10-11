@@ -32,7 +32,7 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
     if (_tokenSecure != "") {
       _checkToken(_tokenSecure);
     } else {
-      print(_tokenSecure);
+      // print(_tokenSecure);
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -90,10 +90,10 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
           }
         });
       } else {
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
-      print("Error");
+      // print("Error");
     }
   }
 
@@ -268,7 +268,7 @@ class ActorItem extends StatelessWidget {
 }
 
 class EmptyView extends StatelessWidget {
-  const EmptyView({Key? key}) : super(key: key);
+  const EmptyView({super.key});
 
   @override
   Widget build(BuildContext context) {

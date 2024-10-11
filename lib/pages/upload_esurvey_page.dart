@@ -79,12 +79,12 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
           if (dataUpload['alreadyUp'] == 1) {
             _alreadyUpload = true;
             _dataUploadImage = "${const String.fromEnvironment('devUrl')}$link";
-            print(_dataUploadImage);
+            // print(_dataUploadImage);
           }
         });
       } else {
         debugPrint(apiUrl);
-        print(response.statusCode);
+        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -106,19 +106,18 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
         filename: file.path.toString() + file.name));
     var response = await request.send();
     if (response.statusCode == 200) {
-      var responseData = await http.Response.fromStream(response);
-      var resBody = jsonDecode(responseData.body);
+      // var responseData = await http.Response.fromStream(response);
+      // var resBody = jsonDecode(responseData.body);
       Navigator.pop(context);
-      print(resBody);
+      // print(resBody);
     } else {
-      print(response.statusCode);
+      // print(response.statusCode);
     }
   }
 
   Future<void> _onImageButtonPressed(
     ImageSource source, {
     required BuildContext context,
-    bool isMultiImage = false,
     bool isMedia = false,
   }) async {
     if (context.mounted) {
@@ -158,7 +157,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
               imageQuality: quality,
             );
             setState(() {
-              print(pickedFile?.path ?? 'path');
+              // print(pickedFile?.path ?? 'path');
               _setImageFileListFromFile(pickedFile);
             });
             setState(() {
@@ -193,7 +192,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
         child: ListView.builder(
           key: UniqueKey(),
           itemBuilder: (BuildContext context, int index) {
-            final String? mime = lookupMimeType(_mediaFileList![index].path);
+            lookupMimeType(_mediaFileList![index].path);
 
             // Why network for web?
             // See https://pub.dev/packages/image_picker_for_web#limitations-on-the-web-platform
@@ -255,7 +254,7 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Upload E-Survey"),
+        title: const Text("Upload E-Survey"),
       ),
       body: Center(
         child: _alreadyUpload
