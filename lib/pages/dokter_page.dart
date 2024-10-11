@@ -42,19 +42,13 @@ class _DokterPageState extends State<DokterPage> {
       });
 
       if (response.statusCode == 200) {
-        //mengabil data user
         final dataDokter = json.decode(response.body)['data'];
-        // print(dataDokter);
-        // setState(() {
-        //   _dataDokter = (json.decode(response.body)['data']);
-        // });
         setState(() {
           int i = -1;
           dataDokter.forEach((data) => {_dataDokter[i += 1] = data});
         });
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -67,14 +61,10 @@ class _DokterPageState extends State<DokterPage> {
     jadwalDokterPoli(dataDokter['jadwal_poli']);
     showGeneralDialog(
       context: context,
-      barrierDismissible:
-          false, // should dialog be dismissed when tapped outside
-      barrierLabel: "Modal", // label for barrier
-      transitionDuration: const Duration(
-          milliseconds:
-              500), // how long it takes to popup dialog after button click
+      barrierDismissible: false,
+      barrierLabel: "Modal",
+      transitionDuration: const Duration(milliseconds: 500),
       pageBuilder: (_, __, ___) {
-        // your widget implementation
         return Scaffold(
           appBar: AppBar(
               backgroundColor: Colors.white,

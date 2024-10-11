@@ -34,7 +34,6 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     final userShiftID = await storage.read(key: 'userShiftId') ?? "{}";
-    // print(userShiftID);
     setState(() {
       _tokenSecure = tokenSecure;
       _userShiftID = userShiftID;
@@ -73,19 +72,13 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
         );
 
         if (response.statusCode == 200) {
-          //menyimpan data token
-          // print(response.body);
-
           setState(() {
             _isValidQr = 1;
             cameraControllerCheckout.stop();
           });
-          // Navigator.pop(context);
           _showSimpleModalDialog(context);
-          //berpindah halaman
         } else {
           debugPrint(apiUrl);
-          // print(response.statusCode);
         }
       } catch (e) {
         debugPrint(e.toString());

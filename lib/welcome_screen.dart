@@ -82,15 +82,6 @@ class WelcomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          // const Spacer(),
-          // const Text(
-          //   'Login with Social Media',
-          //   style: TextStyle(fontSize: 17, color: Colors.white),
-          // ), //
-          // const SizedBox(
-          //   height: 12,
-          // ),
-          // const Image(image: AssetImage('assets/social.png'))
         ]),
       ),
     );

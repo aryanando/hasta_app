@@ -8,7 +8,6 @@ class RegScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(
-      //thanks for watching
       children: [
         Container(
           height: double.infinity,

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hasta_app/home_page.dart';
-// import 'package:hasta_app/WelcomeScreen.dart';
-// import 'package:hasta_app/reg_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:developer';
@@ -19,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final TextEditingController passwordController = TextEditingController();
   Text loginStatus = const Text("");
-  // Create storage
   final storage = const FlutterSecureStorage();
 
   Future<void> login(String email, String password) async {
@@ -33,17 +30,11 @@ class _LoginScreenState extends State<LoginScreen> {
     inspect(response.statusCode);
 
     if (response.statusCode == 200) {
-      //mengambil data token
       final token = json.decode(response.body)['token'];
-
-      //mengabil data user
       final user = json.decode(response.body)['user'];
-
-      //menyimpan data token
       await storage.write(key: 'tokenSecure', value: token['token']);
       await storage.write(key: 'userData', value: jsonEncode(user));
 
-      //berpindah halaman
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -58,7 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       debugPrint(apiUrl);
-      // print(response.statusCode);
       setState(() {
         _isLoading = false;
         loginStatus = const Text("Sandi Atau Email Salah!..",
@@ -160,7 +150,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          // 'Lupa Sandi?..',
                           '',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,

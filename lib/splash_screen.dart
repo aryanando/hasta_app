@@ -22,17 +22,14 @@ class _SplashScreenState extends State<SplashScreen>
   final storage = const FlutterSecureStorage();
   late AnimationController controller;
 
-  // Method to load the shared preference data
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     setState(() {
       _tokenSecure = tokenSecure;
     });
-    // print('Token Anda Adalah: $_token');
     if (_tokenSecure != "") {
       _checkToken(_tokenSecure);
     } else {
-      // print(_tokenSecure);
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -46,7 +43,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _checkToken(String? myToken) {
     if (myToken != "") {
-      // print('Token Anda Adalah Secure: $myToken');
       getUserData(myToken);
     } else {
       if (!context.mounted) return;
@@ -72,13 +68,8 @@ class _SplashScreenState extends State<SplashScreen>
       inspect(response.statusCode);
 
       if (response.statusCode == 200) {
-        //mengabil data user
         final user = json.decode(response.body)['data'];
-
-        //menyimpan data token
         await storage.write(key: 'data', value: response.body);
-
-        //berpindah halaman
         if (!context.mounted) return;
         Navigator.pushAndRemoveUntil(
           context,
@@ -93,7 +84,6 @@ class _SplashScreenState extends State<SplashScreen>
         );
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -120,8 +110,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     controller = AnimationController(
-      /// [AnimationController]s can be created with `vsync: this` because of
-      /// [TickerProviderStateMixin].
       vsync: this,
       duration: const Duration(seconds: 2),
     )..addListener(() {

@@ -73,20 +73,13 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
         );
 
         if (response.statusCode == 200) {
-          //menyimpan data token
-          // print(response.body);
-
           setState(() {
             _isValidQr = 1;
             cameraControllerCheckout.stop();
           });
-          // Navigator.pop(context);
-          // Navigator.of(context, rootNavigator: true).pop();
           _showSimpleModalDialog(context);
-          //berpindah halaman
         } else {
           debugPrint(apiUrl);
-          // print(response.statusCode);
         }
       } catch (e) {
         debugPrint(e.toString());

@@ -22,17 +22,14 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
   final storage = const FlutterSecureStorage();
   late AnimationController controller;
 
-  // Method to load the shared preference data
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     setState(() {
       _tokenSecure = tokenSecure;
     });
-    // print('Token Anda Adalah: $_token');
     if (_tokenSecure != "") {
       _checkToken(_tokenSecure);
     } else {
-      // print(_tokenSecure);
       if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -46,7 +43,6 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
 
   void _checkToken(String? myToken) {
     if (myToken != "") {
-      // print('Token Anda Adalah Secure: $myToken');
       getUserData(myToken);
     } else {
       if (!context.mounted) return;
@@ -75,7 +71,6 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
       inspect(response.statusCode);
 
       if (response.statusCode == 200) {
-        //mengabil data user
         final dataRanap = json.decode(response.body)['data'];
 
         setState(() {
@@ -89,12 +84,8 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
             ));
           }
         });
-      } else {
-        // print(response.statusCode);
-      }
-    } catch (e) {
-      // print("Error");
-    }
+      } else {}
+    } catch (e) {}
   }
 
   @override

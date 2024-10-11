@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-// import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
-// import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/components/absensi_notif_card.dart';
@@ -30,7 +27,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Variables to store the shared preference data
   String? _tokenSecure;
   int _cardColor = 0xffffdee4;
   String _cardTittle = "";
@@ -40,16 +36,11 @@ class _HomePageState extends State<HomePage> {
   final Map _dataPengumuman = {};
 
   final storage = const FlutterSecureStorage();
-
-  // Method to load the shared preference data
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
     setState(() {
       _tokenSecure = tokenSecure;
     });
-    // print('Token Anda Adalah: $_token');
-    // print('Token Anda Adalah Secure: $_tokenSecure');
-    // print("--------------- You're in Home Page ---------------");
     getAbsensiData(_tokenSecure);
     getPengumuman(_tokenSecure);
     getDataUpload();
@@ -66,17 +57,14 @@ class _HomePageState extends State<HomePage> {
       });
 
       if (response.statusCode == 200) {
-        //mengabil data user
         final dataPengumuman = json.decode(response.body)['data'];
 
         setState(() {
           int i = -1;
           dataPengumuman.forEach((data) => {_dataPengumuman[i += 1] = data});
-          // print(_dataPengumuman);
         });
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -95,7 +83,6 @@ class _HomePageState extends State<HomePage> {
       });
 
       if (response.statusCode == 200) {
-        //mengabil data user
         final dataUpload = json.decode(response.body)['data'];
 
         setState(() {
@@ -105,7 +92,6 @@ class _HomePageState extends State<HomePage> {
         });
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -138,7 +124,6 @@ class _HomePageState extends State<HomePage> {
     await http.post(Uri.parse(url), headers: headers);
     await storage.deleteAll();
 
-    // print(response.body);
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
@@ -159,10 +144,7 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final dataAbsensiHariIni = json.decode(response.body)['data'];
 
-        // print(dataAbsensiHariIni['id']);
-
         if (dataAbsensiHariIni['check_in'] == null) {
-          // print('Belum Absen Masuk');
           setState(() {
             _cardColor = 0xffffbaba;
             _cardTittle = "Anda Belum Absen";
@@ -172,7 +154,6 @@ class _HomePageState extends State<HomePage> {
           await storage.write(
               key: 'userShiftId', value: jsonEncode(dataAbsensiHariIni['id']));
         } else if (dataAbsensiHariIni['check_out'] == null) {
-          // print('Belum Absen Pulang');
           setState(() {
             _cardColor = 0xffa4ffa4;
             _cardTittle = "Anda Telah Checkin";
@@ -182,7 +163,6 @@ class _HomePageState extends State<HomePage> {
           await storage.write(
               key: 'userShiftId', value: jsonEncode(dataAbsensiHariIni['id']));
         } else {
-          // print('Sudah Pulang');
           setState(() {
             _cardColor = 0xff91d2ff;
             _cardTittle = "Anda Telah Checkout";
@@ -192,7 +172,6 @@ class _HomePageState extends State<HomePage> {
         }
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -402,18 +381,14 @@ class _HomePageState extends State<HomePage> {
                             image: DecorationImage(
                               image: AssetImage("assets/backgrounds/rs_01.png"),
                               fit: BoxFit.cover,
-                              // colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
                             ),
                             color: Color(0xffdcf2f1),
                           ),
-                          // color: const Color(0xffdcf2f1),
                           child: Center(
                             child: Padding(
                               padding: const EdgeInsets.all(30.0),
                               child: Column(
                                 children: [
-                                  // Header Pengumuman
-
                                   const Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -427,12 +402,9 @@ class _HomePageState extends State<HomePage> {
                                       Icon(Icons.more_horiz)
                                     ],
                                   ),
-
                                   const SizedBox(
                                     height: 20,
                                   ),
-
-                                  // List Penumuman
                                   Expanded(
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
@@ -448,13 +420,11 @@ class _HomePageState extends State<HomePage> {
                                               Card(
                                                 color: Colors.white,
                                                 child: ListTile(
-                                                  // leading: Icon(Icons.close),
                                                   title: Text(_dataPengumuman[i]
                                                       ['name']),
                                                   subtitle: Text(
                                                       _dataPengumuman[i]
                                                           ['content']),
-                                                  // trailing: Icon(Icons.more_vert),
                                                 ),
                                               ),
                                         ],
@@ -486,13 +456,6 @@ class _HomePageState extends State<HomePage> {
               title: "Profil",
             ),
           ),
-          // PersistentTabConfig(
-          //   screen: YourThirdScreen(),
-          //   item: ItemConfig(
-          //     icon: Icon(Icons.settings),
-          //     title: "Settings",
-          //   ),
-          // ),
         ],
         navBarBuilder: (navBarConfig) => Style1BottomNavBar(
           navBarConfig: navBarConfig,

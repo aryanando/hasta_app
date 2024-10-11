@@ -55,8 +55,6 @@ class _GajiPageState extends State<GajiPage> {
 
       if (response.statusCode == 200) {
         final dataPendapatan = json.decode(response.body)['data'];
-        // print(dataPendapatan);
-
         setState(() {
           int i = -1;
           int j = -1;
@@ -73,16 +71,12 @@ class _GajiPageState extends State<GajiPage> {
         });
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
         return;
       } else {}
     }
-
-    // print("--------------- You're in Salary Page ---------------");
-    // print(_dataPendapatanAll);
   }
 
   String convertToIDR(String amount) {
@@ -150,7 +144,6 @@ class _GajiPageState extends State<GajiPage> {
                             style: TextStyle(color: Colors.red, fontSize: 20)),
                         subtitle: Text("Data penghasilan selama satu bulan"),
                       ),
-                      // Gaji Pokok
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +172,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // BPJS TK
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,7 +200,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // BPJS 4%
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +228,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      //THR
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +255,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Tunjangan Keluarga
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,7 +283,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Jaspel
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,7 +348,6 @@ class _GajiPageState extends State<GajiPage> {
                             style: TextStyle(color: Colors.red, fontSize: 20)),
                         subtitle: Text("Data potongan selama satu bulan"),
                       ),
-                      // Pot BPJS TK
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +378,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Pot BPJS 1%
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -422,7 +408,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Pot BPJS 4%
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -453,9 +438,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Tunjangan Keluarga
-
-                      // Potongan Tunjangan Keluarga
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -486,7 +468,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Bon Bensat
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -515,7 +496,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan THR
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -544,7 +524,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Simp, Cicilan, dan Bon Koperasi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -575,7 +554,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Cicilan, dan Bon Koperasi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -606,7 +584,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Bon Koperasi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -637,7 +614,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Kinerja
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -668,7 +644,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Kinerja
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -697,7 +672,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Yatim
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -728,7 +702,6 @@ class _GajiPageState extends State<GajiPage> {
                           ),
                         ],
                       ),
-                      // Potongan Kasir
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,

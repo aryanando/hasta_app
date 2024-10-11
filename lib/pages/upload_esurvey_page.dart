@@ -1,9 +1,3 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// ignore_for_file: public_member_api_docs
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -71,7 +65,6 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
       });
 
       if (response.statusCode == 200) {
-        //mengabil data user
         final dataUpload = json.decode(response.body)['data'];
         String link = (dataUpload['esurvey'][0]['image']);
 
@@ -79,12 +72,10 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
           if (dataUpload['alreadyUp'] == 1) {
             _alreadyUpload = true;
             _dataUploadImage = "${const String.fromEnvironment('devUrl')}$link";
-            // print(_dataUploadImage);
           }
         });
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -94,7 +85,6 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
   }
 
   Future<void> uploadFile(XFile file) async {
-    // File files = File(file.path);
     String apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/esurvey';
     var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
     request.headers['authorization'] = 'Bearer $_tokenSecure';
@@ -106,13 +96,8 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
         filename: file.path.toString() + file.name));
     var response = await request.send();
     if (response.statusCode == 200) {
-      // var responseData = await http.Response.fromStream(response);
-      // var resBody = jsonDecode(responseData.body);
       Navigator.pop(context);
-      // print(resBody);
-    } else {
-      // print(response.statusCode);
-    }
+    } else {}
   }
 
   Future<void> _onImageButtonPressed(
@@ -157,7 +142,6 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
               imageQuality: quality,
             );
             setState(() {
-              // print(pickedFile?.path ?? 'path');
               _setImageFileListFromFile(pickedFile);
             });
             setState(() {
@@ -193,9 +177,6 @@ class _UploadEsurveyPageState extends State<UploadEsurveyPage> {
           key: UniqueKey(),
           itemBuilder: (BuildContext context, int index) {
             lookupMimeType(_mediaFileList![index].path);
-
-            // Why network for web?
-            // See https://pub.dev/packages/image_picker_for_web#limitations-on-the-web-platform
             return Semantics(
               label: 'image_picker_example_picked_image',
               child: kIsWeb

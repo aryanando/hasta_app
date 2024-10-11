@@ -45,16 +45,13 @@ class _NumbersWidgetState extends State<NumbersWidget> {
 
       if (response.statusCode == 200) {
         final dataPengumuman = json.decode(response.body)['data'];
-        // print(dataPengumuman['currentMonthRating']);
         setState(() {
           _currentRating = dataPengumuman['currentMonthRating'].toString();
           _currentLateCount = dataPengumuman['currentMonthLate'].toString();
           _countShifts = dataPengumuman['countShifts'].toString();
         });
-        // print(_currentRating);
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {

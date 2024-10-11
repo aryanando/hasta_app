@@ -49,18 +49,15 @@ class _ProfilPageState extends State<ProfilPage> {
       });
 
       if (response.statusCode == 200) {
-        //mengabil data user
         final dataUpload = json.decode(response.body)['data'];
 
         setState(() {
           if (dataUpload['alreadyUp'] == 1) {
             _alreadyUpload = true;
-            // print(_dataUploadImage);
           }
         });
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {

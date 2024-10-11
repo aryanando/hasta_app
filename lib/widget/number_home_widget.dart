@@ -45,16 +45,13 @@ class _NumbersHomeWidgetState extends State<NumbersHomeWidget> {
 
       if (response.statusCode == 200) {
         final dataPengumuman = json.decode(response.body)['data'];
-        // print(dataPengumuman['currentMonthRating']);
         setState(() {
           _currentRating = dataPengumuman['currentMonthRating'].toString();
           _currentLateCount = dataPengumuman['currentMonthLate'].toString();
           _countShifts = dataPengumuman['countShifts'].toString();
         });
-        // print(_currentRating);
       } else {
         debugPrint(apiUrl);
-        // print(response.statusCode);
       }
     } catch (e) {
       if (!context.mounted) {
@@ -65,8 +62,6 @@ class _NumbersHomeWidgetState extends State<NumbersHomeWidget> {
 
   @override
   Widget build(BuildContext context) => Container(
-        // margin: EdgeInsets.all(10),
-        // padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
             color: const Color(0xffdddddd),
             borderRadius: BorderRadius.circular(12)),
@@ -78,8 +73,6 @@ class _NumbersHomeWidgetState extends State<NumbersHomeWidget> {
             buildButton(context, _currentLateCount, 'Terlambat:'),
             buildDivider(),
             buildButton(context, _countShifts, 'Masuk:'),
-            // buildDivider(),
-            // buildButton(context, _countShifts, 'Tidak Absen:'),
           ],
         ),
       );
