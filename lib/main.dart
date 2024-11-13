@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hasta_app/login_screen.dart';
+import 'package:hasta_app/pages/absensi_calendar_page.dart';
 import 'package:hasta_app/pages/absensi_page.dart';
 import 'package:hasta_app/pages/absensi_pulang_page.dart';
 import 'package:hasta_app/pages/dokter_page.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const RegScreen(),
         '/absensi-cam': (context) => const AbsensiScanPage(),
         '/absensi-pulang-cam': (context) => const AbsensiPulangScanPage(),
-        '/jadwal': (context) => const JadwalPage(),
+        '/jadwal': (context) => const AbsensiCalendarPage(),
         '/ranap': (context) => const RanapPage(),
         '/gaji': (context) => const GajiPage(),
         '/ralan': (context) => const RalanPage(),
