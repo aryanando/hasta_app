@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 
@@ -89,7 +90,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue[100],
-          title: Text('Absensi Calendar'),
+          title: const Text('Absensi Calendar'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
@@ -100,12 +101,12 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
         body: ListView(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 10, 12, 4),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
               child: Container(
                 height: 550,
                 color: Colors.green[100],
                 child: Padding(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     children: [
                       _buildHeader(),
@@ -133,6 +134,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
                 ),
               ),
             ),
+            buildHistory(_dataAbsensiBulanIni),
           ],
         ),
       ),
@@ -163,7 +165,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
           // Displays the name of the current month
           Text(
             '${DateFormat('MMMM').format(_currentMonth)} 2024',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           // DropdownButton<int>(
           //   // Dropdown for selecting a year
@@ -234,7 +236,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
       padding: const EdgeInsets.only(right: 8.0),
       child: Text(
         day,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -246,7 +248,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
     int weekdayOfFirstDay = firstDayOfMonth.weekday;
 
     DateTime lastDayOfPreviousMonth =
-        firstDayOfMonth.subtract(Duration(days: 1));
+        firstDayOfMonth.subtract(const Duration(days: 1));
     int daysInPreviousMonth = lastDayOfPreviousMonth.day;
 
     return GridView.builder(
@@ -273,7 +275,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
             alignment: Alignment.center,
             child: Text(
               previousMonthDay.toString(),
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             ),
           );
         } else {
@@ -339,8 +341,8 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
                               height: 30,
                               width: 60,
                               color: HexColor(dataShiftsColor),
-                              child: Padding(
-                                padding: const EdgeInsets.all(6),
+                              child: const Padding(
+                                padding: EdgeInsets.all(6),
                                 // child: Text(
                                 //   dataShifts,
                                 //   style: TextStyle(fontSize: 10),
@@ -352,7 +354,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
                                   left: 3, right: 3, top: 3),
                               child: Text(
                                 dataShifts,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 10,
                                 ),
                                 textAlign: TextAlign.center,
@@ -369,6 +371,96 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
           );
         }
       },
+    );
+  }
+
+  Widget buildHistory(Map<dynamic, dynamic> dataAbsensi) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Container(
+        color: Colors.grey[200],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              const Text(
+                'Histori Absensi Anda :',
+                style: TextStyle(fontSize: 24),
+              ),
+              for (int i = 1;
+                  i <= daysInMonth(DateTime.now().year, DateTime.now().month);
+                  i++)
+                if (dataAbsensi[i.toString()] != null)
+                  buildHistoryItem(dataAbsensi[i.toString()])
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildHistoryItem(Map<dynamic, dynamic> dataAbsensi) {
+    String textKeterangan = 'Please Wait';
+
+    Icon iconKehadiran = const Icon(
+      Icons.check,
+      color: Colors.grey,
+    );
+
+    if (dataAbsensi['check_in'] != null) {
+      if (DateTime.parse(
+                  "${DateFormat('yyyy-MM-dd').format(DateTime.parse(dataAbsensi['valid_date_start']))} ${dataAbsensi['shift_checkin']}")
+              .compareTo(DateTime.parse(dataAbsensi['check_in'])) >
+          0) {
+        textKeterangan = 'Tepat Waktu';
+        setState(() {
+          iconKehadiran = const Icon(
+            Icons.check,
+            color: Colors.green,
+          );
+        });
+      } else {
+        Duration difference = DateTime.parse(dataAbsensi['check_in'])
+            .difference(DateTime.parse(
+                "${DateFormat('yyyy-MM-dd').format(DateTime.parse(dataAbsensi['valid_date_start']))} ${dataAbsensi['shift_checkin']}"));
+        textKeterangan =
+            'Anda Terlambat ${difference.inMinutes > 0 ? "${difference.inMinutes} Menit" : "${difference.inSeconds} Detik"}';
+        setState(() {
+          iconKehadiran = Icon(
+            Icons.assignment_late_outlined,
+            color: Colors.orange,
+          );
+        });
+      }
+    } else if (DateTime.parse(
+                "${DateFormat('yyyy-MM-dd').format(DateTime.parse(dataAbsensi['valid_date_start']))} ${dataAbsensi['shift_checkin']}")
+            .compareTo(DateTime.now()) <
+        0) {
+      textKeterangan = 'Anda tidak absen';
+      setState(() {
+        iconKehadiran = Icon(
+          Icons.assignment_late_outlined,
+          color: Colors.red[300],
+        );
+      });
+    } else {
+      textKeterangan = '-';
+      setState(() {
+        iconKehadiran = const Icon(
+          Icons.calendar_month,
+          color: Colors.grey,
+        );
+      });
+    }
+
+    return Card(
+      child: ListTile(
+        leading: iconKehadiran,
+        title: Text(DateFormat('dd MMMM yyyy')
+            .format(DateTime.parse(dataAbsensi['valid_date_start']))),
+        subtitle: Text(textKeterangan),
+        trailing: const Icon(Icons.remove_red_eye_rounded),
+      ),
     );
   }
 }
