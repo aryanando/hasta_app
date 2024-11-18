@@ -85,6 +85,7 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
           }
         });
       } else {}
+      // ignore: empty_catches
     } catch (e) {}
   }
 

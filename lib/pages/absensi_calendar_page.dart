@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:quiver/time.dart';
-import 'package:badges/badges.dart' as badges;
 
 // void main() {
 //   runApp(AbsensiCalendarPage());
@@ -143,7 +141,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
 
   Widget _buildHeader() {
     // Checks if the current month is the last month of the year (December)
-    bool isLastMonthOfYear = _currentMonth.month == 12;
+    // bool isLastMonthOfYear = _currentMonth.month == 12;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -299,6 +297,8 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
             onTap: () {
               // Handle tap on a date cell
               // This is where you can add functionality when a date is tapped
+              _dialogBuilder(
+                  context, _dataAbsensiBulanIni[indexJadwal.toString()]);
             },
             child: Container(
               decoration: const BoxDecoration(
@@ -384,14 +384,30 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
           child: Column(
             children: [
               const Text(
-                'Histori Absensi Anda :',
-                style: TextStyle(fontSize: 24),
+                'Histori Absensi Anda Terbaru:',
+                style: TextStyle(fontSize: 22),
               ),
               for (int i = 1;
                   i <= daysInMonth(DateTime.now().year, DateTime.now().month);
                   i++)
-                if (dataAbsensi[i.toString()] != null)
-                  buildHistoryItem(dataAbsensi[i.toString()])
+                if (dataAbsensi[i.toString()] != null &&
+                    (i >= DateTime.now().day - 4) &&
+                    (i <= DateTime.now().day))
+                  buildHistoryItem(dataAbsensi[i.toString()]),
+              const SizedBox(
+                height: 8,
+              ),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/histori-kehadiran',
+                  );
+                },
+                icon: const Icon(Icons.visibility),
+                label: const Text('Lihat Semua'),
+                iconAlignment: IconAlignment.start,
+              ),
             ],
           ),
         ),
@@ -426,7 +442,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
         textKeterangan =
             'Anda Terlambat ${difference.inMinutes > 0 ? "${difference.inMinutes} Menit" : "${difference.inSeconds} Detik"}';
         setState(() {
-          iconKehadiran = Icon(
+          iconKehadiran = const Icon(
             Icons.assignment_late_outlined,
             color: Colors.orange,
           );
@@ -459,8 +475,51 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
         title: Text(DateFormat('dd MMMM yyyy')
             .format(DateTime.parse(dataAbsensi['valid_date_start']))),
         subtitle: Text(textKeterangan),
-        trailing: const Icon(Icons.remove_red_eye_rounded),
+        trailing: IconButton(
+          icon: const Icon(Icons.remove_red_eye_rounded),
+          onPressed: () {
+            _dialogBuilder(context, dataAbsensi);
+          },
+        ),
       ),
+    );
+  }
+
+  Future<void> _dialogBuilder(
+      BuildContext context, Map<dynamic, dynamic> dataAbsensi) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Data Kehadiran'),
+          content: Text(
+            'Tanggal : ${DateFormat('yyyy-MM-dd').format(DateTime.parse(dataAbsensi['valid_date_start']))}\n'
+            'Shift : ${dataAbsensi['shift_name']} ${dataAbsensi['shift_checkin']} - ${dataAbsensi['shift_checkout']}\n'
+            'Datang : ${dataAbsensi['check_in'] != null ? DateFormat('HH:mm:ss').format(DateTime.parse(dataAbsensi['check_in'])) : '-'}\n'
+            'Pulang : ${dataAbsensi['check_out'] != null ? DateFormat('HH:mm:ss').format(DateTime.parse(dataAbsensi['check_out'])) : '-'}',
+          ),
+          // actions: <Widget>[
+          //   TextButton(
+          //     style: TextButton.styleFrom(
+          //       textStyle: Theme.of(context).textTheme.labelLarge,
+          //     ),
+          //     child: const Text('Disable'),
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //   ),
+          //   TextButton(
+          //     style: TextButton.styleFrom(
+          //       textStyle: Theme.of(context).textTheme.labelLarge,
+          //     ),
+          //     child: const Text('Enable'),
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //   ),
+          // ],
+        );
+      },
     );
   }
 }
