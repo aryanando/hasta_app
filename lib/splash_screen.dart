@@ -145,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
         child: Column(
           children: [
             const Padding(
-              padding: EdgeInsets.only(top: 150.0),
+              padding: EdgeInsets.fromLTRB(20, 150, 20, 0),
               child: Image(image: AssetImage('assets/logo.png')),
             ),
             const SizedBox(
