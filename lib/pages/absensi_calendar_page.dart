@@ -36,7 +36,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
   DateTime _currentMonth = DateTime.now();
   bool selectedcurrentyear = false;
   final moonLanding = DateTime.now();
-  var month = DateTime.now();
+  var dateTimes = DateTime.now();
   String? _tokenSecure;
   final storage = const FlutterSecureStorage();
   Map _dataAbsensiBulanIni = {};
@@ -57,7 +57,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
 
   Future<void> getAbsensiData(String? myToken) async {
     String apiUrl =
-        '${const String.fromEnvironment('devUrl')}api/v1/shift-user/${month.month}';
+        '${const String.fromEnvironment('devUrl')}api/v1/shift-user/${dateTimes.month}';
     try {
       final response = await http.get(Uri.parse(apiUrl), headers: {
         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ class _AbsensiCalendarPageState extends State<AbsensiCalendarPage> {
                             });
                           },
                           itemCount: 12 *
-                              10, // Show 10 years, adjust this count as needed
+                              1, // Show 10 years, adjust this count as needed
                           itemBuilder: (context, pageIndex) {
                             DateTime month = DateTime(
                                 _currentMonth.year, (pageIndex % 12) + 1, 1);
