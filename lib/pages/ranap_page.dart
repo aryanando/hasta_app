@@ -133,13 +133,13 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
 
   Widget renderSimpleSearchableList() {
     return SearchableList<Pasien>(
+      itemBuilder: (Pasien user) => ActorItem(actor: user),
       seperatorBuilder: (context, index) {
         return const Divider();
       },
-      style: const TextStyle(fontSize: 25),
-      builder: (list, index, item) {
-        return ActorItem(actor: item);
-      },
+      // builder: (list, index, item) {
+      //   return ActorItem(actor: item);
+      // },
       errorWidget: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -171,7 +171,7 @@ class _RanapPageState extends State<RanapPage> with TickerProviderStateMixin {
       },
       emptyWidget: const EmptyView(),
       onRefresh: () async {},
-      onItemSelected: (Pasien item) {},
+      // onItemSelected: (Pasien item) {},
       inputDecoration: InputDecoration(
         labelText: "Cari Pasien",
         fillColor: Colors.white,
