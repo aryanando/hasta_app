@@ -7,6 +7,7 @@ import 'package:hasta_app/pages/absensi_page.dart';
 import 'package:hasta_app/pages/absensi_pulang_page.dart';
 import 'package:hasta_app/pages/dokter_page.dart';
 import 'package:hasta_app/pages/gaji_page.dart';
+import 'package:hasta_app/pages/quizzes_page.dart';
 import 'package:hasta_app/pages/ralan_page.dart';
 import 'package:hasta_app/pages/ranap_page.dart';
 import 'package:hasta_app/pages/upload_esurvey_page.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         '/ralan': (context) => const RalanPage(),
         '/dokter': (context) => const DokterPage(),
         '/upload-esurvey': (context) => const UploadEsurveyPage(),
+        '/quiz': (context) => QuizzesPage(),
       },
     );
   }
