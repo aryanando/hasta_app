@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/ralan': (context) => const RalanPage(),
         '/dokter': (context) => const DokterPage(),
         '/upload-esurvey': (context) => const UploadEsurveyPage(),
-        '/quiz': (context) => QuizzesPage(),
+        '/quiz': (context) => const QuizzesPage(),
       },
     );
   }

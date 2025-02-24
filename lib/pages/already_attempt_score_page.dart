@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class AlreadyAttemptScorePage extends StatelessWidget {
   final Map<String, dynamic> responseData;
 
-  const AlreadyAttemptScorePage({Key? key, required this.responseData})
-      : super(key: key);
+  const AlreadyAttemptScorePage({super.key, required this.responseData});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,7 @@ class AlreadyAttemptScorePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quiz Result"),
+        title: const Text("Quiz Result"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -25,19 +24,19 @@ class AlreadyAttemptScorePage extends StatelessWidget {
           children: [
             Text(
               "Quiz: ${quiz['name'] ?? 'Unknown Quiz'}",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "Score: $score",
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               "Resume:",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Expanded(
               child: ListView.builder(
                 itemCount: answers.length,
@@ -59,8 +58,8 @@ class AlreadyAttemptScorePage extends StatelessWidget {
           // Pops all routes until the first (home or quizzes page) is reached.
           Navigator.popUntil(context, (route) => route.isFirst);
         },
-        label: Text("Tutup"),
-        icon: Icon(Icons.close),
+        label: const Text("Tutup"),
+        icon: const Icon(Icons.close),
       ),
     );
   }

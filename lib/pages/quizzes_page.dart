@@ -79,7 +79,7 @@ class _QuizzesPageState extends State<QuizzesPage> {
     } catch (error) {
       print('Error attempting quiz: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error attempting quiz")),
+        const SnackBar(content: Text("Error attempting quiz")),
       );
     }
   }
@@ -88,10 +88,10 @@ class _QuizzesPageState extends State<QuizzesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quizzes'),
+        title: const Text('Quizzes'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: quizzes.length,
               itemBuilder: (context, index) {
@@ -100,7 +100,8 @@ class _QuizzesPageState extends State<QuizzesPage> {
                 final bool alreadyAttempted = quiz['attempts'] != null &&
                     (quiz['attempts'] as List).isNotEmpty;
                 return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: ListTile(
                     title: Text(quiz['name']),
                     subtitle: Text(quiz['description']),

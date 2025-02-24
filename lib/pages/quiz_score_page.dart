@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 class QuizScorePage extends StatelessWidget {
   final Map<String, dynamic> attemptData;
 
-  const QuizScorePage({Key? key, required this.attemptData}) : super(key: key);
+  const QuizScorePage({super.key, required this.attemptData});
 
   @override
   Widget build(BuildContext context) {
     final score = attemptData['score'];
     final dataAttempt = attemptData['dataAttempt'];
-    print(this.attemptData);
+    print(attemptData);
     final quiz = dataAttempt['quiz'] ?? attemptData['attemptData'];
     final answers = dataAttempt['answers'];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quiz Result"),
+        title: const Text("Quiz Result"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -24,16 +24,16 @@ class QuizScorePage extends StatelessWidget {
           children: [
             Text(
               "Quiz: ${quiz['name']}",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text("Score: $score"),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               "Resume:",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Expanded(
               child: ListView.builder(
                 itemCount: answers.length,
@@ -55,8 +55,8 @@ class QuizScorePage extends StatelessWidget {
           // Pop all pushed quiz widgets and return to the quizzes page.
           Navigator.popUntil(context, (route) => route.isFirst);
         },
-        label: Text("Tutup"),
-        icon: Icon(Icons.check),
+        label: const Text("Tutup"),
+        icon: const Icon(Icons.check),
       ),
     );
   }

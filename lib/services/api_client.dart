@@ -13,8 +13,8 @@ class ApiClient {
     BaseOptions options = BaseOptions(
       baseUrl:
           '${const String.fromEnvironment('devUrl')}api/v1', // Replace with your API's base URL
-      connectTimeout: Duration(milliseconds: 5000),
-      receiveTimeout: Duration(milliseconds: 5000),
+      connectTimeout: const Duration(milliseconds: 5000),
+      receiveTimeout: const Duration(milliseconds: 5000),
     );
     dio = Dio(options);
 

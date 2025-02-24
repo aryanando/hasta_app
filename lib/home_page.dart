@@ -451,7 +451,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           PersistentTabConfig(
-            screen: SafeArea(
+            screen: const SafeArea(
               child: QuizzesPage(),
             ),
             item: ItemConfig(

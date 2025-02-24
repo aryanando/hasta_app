@@ -8,10 +8,10 @@ class AttemptQuizPage extends StatefulWidget {
   final int quizAttemptId; // Provided when starting the quiz
 
   const AttemptQuizPage({
-    Key? key,
+    super.key,
     required this.quiz,
     required this.quizAttemptId,
-  }) : super(key: key);
+  });
 
   @override
   _AttemptQuizPageState createState() => _AttemptQuizPageState();
@@ -62,7 +62,7 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
     } catch (error) {
       print('Error finishing quiz: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error finishing quiz")),
+        const SnackBar(content: Text("Error finishing quiz")),
       );
     }
   }
@@ -82,9 +82,9 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
             // Display quiz description if available.
             Text(
               widget.quiz['description'] ?? '',
-              style: TextStyle(fontSize: 16.0),
+              style: const TextStyle(fontSize: 16.0),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             // Expanded list of questions.
             Expanded(
               child: ListView.builder(
@@ -93,13 +93,14 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
                   var questionItem = questions[index];
                   var question = questionItem['question'];
                   if (question == null) {
-                    return Container(child: Text('Missing question data'));
+                    return Container(
+                        child: const Text('Missing question data'));
                   }
                   List options = question['options'] ?? [];
                   int quizQuestionId = question['id'];
 
                   return Card(
-                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Column(
@@ -107,12 +108,12 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
                         children: [
                           Text(
                             'Q${index + 1}: ${question['name']}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 10.0),
+                          const SizedBox(height: 10.0),
                           ...options.map<Widget>((option) {
                             return RadioListTile<int>(
                               title: Text(option['name']),
@@ -126,7 +127,7 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
                                 sendAnswer(quizQuestionId, value!);
                               },
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                     ),
@@ -139,8 +140,8 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: finishQuiz,
-        label: Text("Selesai"),
-        icon: Icon(Icons.check),
+        label: const Text("Selesai"),
+        icon: const Icon(Icons.check),
       ),
     );
   }
