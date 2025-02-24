@@ -59,12 +59,14 @@ class _GajiPageState extends State<GajiPage> {
           int i = -1;
           int j = -1;
           String bulan = '';
+          String tahun = '';
           _bulanSlip = [];
           dataPendapatan.forEach((data) => {
                 bulan = DateFormat('MMMM').format(DateTime(0, data['bulan'])),
+                tahun = DateFormat('yyyy').format(DateTime(data['tahun'])),
                 _dataPendapatanAll[i += 1] = data,
-                _bulanSlip.add(
-                    DropdownMenuItem(value: j += 1, child: Text("$bulan 2024")))
+                _bulanSlip.add(DropdownMenuItem(
+                    value: j += 1, child: Text("$bulan $tahun")))
               });
           selectedValue = j;
           _dataPendapatan = dataPendapatan[j];
