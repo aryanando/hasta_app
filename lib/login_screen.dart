@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hasta_app/home_page.dart';
+import 'package:hasta_app/services/helper/shared_perference_helper.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:developer';
@@ -32,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       final token = json.decode(response.body)['token'];
       final user = json.decode(response.body)['user'];
+      await SharedPrefHelper.saveToken(token['token']);
       await storage.write(key: 'tokenSecure', value: token['token']);
       await storage.write(key: 'userData', value: jsonEncode(user));
 

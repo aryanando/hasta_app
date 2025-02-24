@@ -4,6 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hasta_app/components/absensi_notif_card.dart';
 import 'package:hasta_app/components/image_button.dart';
 import 'package:hasta_app/pages/profil_page.dart';
+import 'package:hasta_app/pages/quizzes_page.dart';
+import 'package:hasta_app/services/helper/shared_perference_helper.dart';
 import 'package:hasta_app/widget/number_home_widget.dart';
 import 'login_screen.dart';
 import 'package:intl/intl.dart';
@@ -123,6 +125,7 @@ class _HomePageState extends State<HomePage> {
 
     await http.post(Uri.parse(url), headers: headers);
     await storage.deleteAll();
+    await SharedPrefHelper.removeToken();
 
     if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(
@@ -445,6 +448,15 @@ class _HomePageState extends State<HomePage> {
             item: ItemConfig(
               icon: const Icon(Icons.home),
               title: "Home",
+            ),
+          ),
+          PersistentTabConfig(
+            screen: const SafeArea(
+              child: QuizzesPage(),
+            ),
+            item: ItemConfig(
+              icon: const Icon(Icons.quiz),
+              title: "Quiz",
             ),
           ),
           PersistentTabConfig(
