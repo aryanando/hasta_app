@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         '/absensi-pulang-cam': (context) => const AbsensiPulangScanPage(),
         '/jadwal': (context) => const AbsensiCalendarPage(),
         '/histori-kehadiran': (context) => const AbsensiHistoriPage(),
-        '/ranap': (context) => const RanapPage(),
+        '/ranap': (context) => RanapListPage(),
         '/gaji': (context) => const GajiPage(),
         '/ralan': (context) => const RalanPage(),
         '/dokter': (context) => const DokterPage(),
