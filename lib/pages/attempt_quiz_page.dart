@@ -23,6 +23,7 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
 
   // Send answer to the API each time an option is chosen.
   Future<void> sendAnswer(int quizQuestionId, int questionOptionId) async {
+    // print('${widget.quiz} $quizQuestionId $questionOptionId');
     try {
       Response response = await ApiClient().post(
         '/quiz/question/answer',
@@ -91,14 +92,16 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
                 itemCount: questions.length,
                 itemBuilder: (context, index) {
                   var questionItem = questions[index];
+
                   var question = questionItem['question'];
+                  // print(
+                  //     'Test data ku${questionItem['id']} ${questions.length}');
                   if (question == null) {
                     return Container(
                         child: const Text('Missing question data'));
                   }
                   List options = question['options'] ?? [];
-                  int quizQuestionId = question['id'];
-
+                  int quizQuestionId = questionItem['id'];
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Padding(
@@ -115,6 +118,7 @@ class _AttemptQuizPageState extends State<AttemptQuizPage> {
                           ),
                           const SizedBox(height: 10.0),
                           ...options.map<Widget>((option) {
+                            // print(option);
                             return RadioListTile<int>(
                               title: Text(option['name']),
                               value: option['id'],
