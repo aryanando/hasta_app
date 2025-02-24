@@ -8,15 +8,15 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # A version number is three numbers separated by dots, like 1.2.43
 # followed by an optional build number separated by a +.
 # Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
+# build by specifying --build-name and --build-number, respectively.ß
 # In Android, build-name is used as versionName while build-number used as versionCode.
 # Read more about Android versioning at https://developer.android.com/studio/publish/versioning
 # In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
+# Read more about iOS versionißng at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.15+15
+version: 1.0.16+16
 
 environment:
   sdk: '>=3.2.6 <4.0.0'
@@ -51,7 +51,6 @@ dependencies:
   change_app_package_name: ^1.1.0
   font_awesome_flutter: ^10.7.0
   image_picker: ^1.1.2
-  video_player: ^2.9.2
   mime: ^1.0.6
   win32: 5.11.0
   badges: ^3.1.2

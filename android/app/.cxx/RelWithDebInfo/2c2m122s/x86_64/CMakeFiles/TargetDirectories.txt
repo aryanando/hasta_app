@@ -1,0 +1,2 @@
+D:/PROJECT/ARYANANDO/hasta_app/android/app/.cxx/RelWithDebInfo/2c2m122s/x86_64/CMakeFiles/edit_cache.dir
+D:/PROJECT/ARYANANDO/hasta_app/android/app/.cxx/RelWithDebInfo/2c2m122s/x86_64/CMakeFiles/rebuild_cache.dir
