@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -13,22 +12,12 @@ class GajiPage extends StatefulWidget {
 }
 
 class _GajiPageState extends State<GajiPage> {
-  final moonLanding = DateTime.now();
-  String? _tokenSecure;
   final storage = const FlutterSecureStorage();
-  var month = DateTime.now();
-  Map _dataPendapatan = {};
-  final Map _dataPendapatanAll = {};
-  List<DropdownMenuItem<int>> _bulanSlip = [
-    const DropdownMenuItem(value: 0, child: Text("Wait")),
-    const DropdownMenuItem(value: 1, child: Text("Wait")),
-  ];
-  int selectedValue = 1;
-
-  List<DropdownMenuItem<int>> get dropdownItems {
-    List<DropdownMenuItem<int>> menuItems = _bulanSlip;
-    return menuItems;
-  }
+  String? _tokenSecure;
+  int selectedMonthIndex = 0;
+  List<Map<String, dynamic>> salaryData = [];
+  Map<String, dynamic> currentSalary = {};
+  List<DropdownMenuItem<int>> dropdownItems = [];
 
   @override
   void initState() {
@@ -36,781 +25,177 @@ class _GajiPageState extends State<GajiPage> {
     _loadPreferences();
   }
 
-  void _loadPreferences() async {
-    final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
-    setState(() {
-      _tokenSecure = tokenSecure;
-    });
-    getSalaryData(_tokenSecure);
+  Future<void> _loadPreferences() async {
+    _tokenSecure = await storage.read(key: 'tokenSecure');
+    if (_tokenSecure != null) {
+      setState(() {}); // Ensures UI updates with token
+      getSalaryData();
+    }
   }
 
-  Future<void> getSalaryData(String? myToken) async {
+  Future<void> getSalaryData() async {
     String apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/slip/2';
-    try {
-      final response = await http.get(Uri.parse(apiUrl), headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $myToken',
-      });
 
+    try {
+      final response =
+          await http.get(Uri.parse(apiUrl), headers: _getHeaders());
       if (response.statusCode == 200) {
-        final dataPendapatan = json.decode(response.body)['data'];
+        final data =
+            List<Map<String, dynamic>>.from(json.decode(response.body)['data']);
+
         setState(() {
-          int i = -1;
-          int j = -1;
-          String bulan = '';
-          String tahun = '';
-          _bulanSlip = [];
-          dataPendapatan.forEach((data) => {
-                bulan = DateFormat('MMMM').format(DateTime(0, data['bulan'])),
-                tahun = DateFormat('yyyy').format(DateTime(data['tahun'])),
-                _dataPendapatanAll[i += 1] = data,
-                _bulanSlip.add(DropdownMenuItem(
-                    value: j += 1, child: Text("$bulan $tahun")))
-              });
-          selectedValue = j;
-          _dataPendapatan = dataPendapatan[j];
+          salaryData = data;
+          dropdownItems = data.asMap().entries.map((entry) {
+            final i = entry.key;
+            final salary = entry.value;
+            final month =
+                DateFormat('MMMM').format(DateTime(0, salary['bulan']));
+            final year = salary['tahun'].toString();
+            return DropdownMenuItem(value: i, child: Text("$month $year"));
+          }).toList();
+
+          if (salaryData.isNotEmpty) {
+            selectedMonthIndex = salaryData.length - 1;
+            currentSalary = salaryData[selectedMonthIndex];
+          }
         });
-      } else {
-        debugPrint(apiUrl);
       }
     } catch (e) {
-      if (!context.mounted) {
-        return;
-      } else {}
+      debugPrint("Error fetching salary data: $e");
     }
   }
 
-  String convertToIDR(String amount) {
-    if (amount == 'null') {
-      amount = '0';
-    }
-    String formattedAmount =
-        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp.')
-            .format(int.parse(amount));
+  String convertToIDR(String? amount) {
+    if (amount == null || amount == 'null') return 'Rp.0';
+    return NumberFormat.currency(locale: 'id_ID', symbol: 'Rp.')
+        .format(int.parse(amount))
+        .replaceAll(',00', '');
+  }
 
-    return formattedAmount.replaceAll(',00', '');
+  Map<String, String> _getHeaders() {
+    return {
+      'Authorization': 'Bearer $_tokenSecure',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Data Gaji'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop(),
+        title: const Text('Data Gaji'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: getSalaryData,
           ),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              tooltip: 'Reload',
-              onPressed: () {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('Reload Data')));
-                getSalaryData(_tokenSecure);
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Dropdown to select month
+            DropdownButton<int>(
+              value: selectedMonthIndex,
+              items: dropdownItems,
+              onChanged: (int? newIndex) {
+                setState(() {
+                  selectedMonthIndex = newIndex!;
+                  currentSalary = salaryData[selectedMonthIndex];
+                });
               },
+              isExpanded: true,
             ),
-          ]),
-      body: Container(
-        margin: const EdgeInsets.all(5),
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 206, 206, 206),
-          borderRadius: BorderRadius.circular(10),
+
+            const SizedBox(height: 16),
+
+            // Salary Details
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildSection("Pendapatan", Colors.green, [
+                    _buildSalaryItem("Gaji Pokok", currentSalary['gaji_pokok']),
+                    _buildSalaryItem("BPJS TK", currentSalary['bpjs_tk']),
+                    _buildSalaryItem("BPJS 4%", currentSalary['bpjs_4p']),
+                    _buildSalaryItem("THR", currentSalary['thr']),
+                    _buildSalaryItem(
+                        "Tunjangan Keluarga", currentSalary['t_keluarga']),
+                    _buildSalaryItem("Jasa Pelayanan", currentSalary['jaspel']),
+                    _buildSalaryItem("Total Gaji", currentSalary['jumlah_gaji'],
+                        isTotal: true),
+                  ]),
+                  const SizedBox(height: 16),
+                  _buildSection("Potongan", Colors.red, [
+                    _buildSalaryItem(
+                        "Potongan BPJS TK", currentSalary['pot_bpjs_tk']),
+                    _buildSalaryItem(
+                        "Potongan BPJS 1%", currentSalary['pot_bpjs_1p']),
+                    _buildSalaryItem(
+                        "Potongan BPJS 4%", currentSalary['pot_bpjs_4p']),
+                    _buildSalaryItem(
+                        "Potongan Kinerja", currentSalary['pot_kinerja']),
+                    _buildSalaryItem("Potongan THR", currentSalary['pot_thr']),
+                    _buildSalaryItem(
+                        "Potongan PPH 21", currentSalary['pot_pph21']),
+                    _buildSalaryItem(
+                        "Total Potongan", currentSalary['jumlah_potongan'],
+                        isTotal: true),
+                  ]),
+                  const SizedBox(height: 16),
+                  _buildSection("Gaji Diterima", Colors.blue, [
+                    _buildSalaryItem(
+                        "Total Diterima", currentSalary['jumlah_diterima'],
+                        isTotal: true, fontSize: 24),
+                  ]),
+                ],
+              ),
+            ),
+          ],
         ),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: ListView(
-            children: <Widget>[
-              DropdownButton(
-                  value: selectedValue,
-                  onChanged: (int? newValue) {
-                    setState(() {
-                      selectedValue = newValue!;
-                      _dataPendapatan = _dataPendapatanAll[selectedValue];
-                    });
-                  },
-                  items: dropdownItems),
-              const SizedBox(
-                height: 10,
-              ),
-              Center(
-                child: Card(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const ListTile(
-                        title: Text("Pendapatan",
-                            style: TextStyle(color: Colors.red, fontSize: 20)),
-                        subtitle: Text("Data penghasilan selama satu bulan"),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Gaji Pokok :'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['gaji_pokok'].toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(_dataPendapatan['gaji_pokok']
-                                        .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('BPJS Tenaga Kerjaan:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['bpjs_tk'].toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['bpjs_tk'].toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('BPJS 4%:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['bpjs_4p'].toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['bpjs_4p'].toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('THR:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['thr'].toString() == 'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['thr'].toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Tunjangan Keluarga:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['t_keluarga'].toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(_dataPendapatan['t_keluarga']
-                                        .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Jasa Pelayanan:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['jaspel'].toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['jaspel'].toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin:
-                                const EdgeInsets.only(right: 15, bottom: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  "Total Gaji: ${convertToIDR(_dataPendapatan['jumlah_gaji'].toString())}",
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Center(
-                child: Card(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const ListTile(
-                        title: Text("Potongan",
-                            style: TextStyle(color: Colors.red, fontSize: 20)),
-                        subtitle: Text("Data potongan selama satu bulan"),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan BPJS Tenaga Kerjaan:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_bpjs_tk'].toString() ==
-                                            'null'
-                                        ? 'Rp.0'
-                                        : convertToIDR(
-                                            _dataPendapatan['pot_bpjs_tk']
-                                                .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan BPJS 1%:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_bpjs_1p'].toString() ==
-                                            'null'
-                                        ? 'Rp.0'
-                                        : convertToIDR(
-                                            _dataPendapatan['pot_bpjs_1p']
-                                                .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan BPJS 4%:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_bpjs_4p'].toString() ==
-                                            'null'
-                                        ? 'Rp.0'
-                                        : convertToIDR(
-                                            _dataPendapatan['pot_bpjs_4p']
-                                                .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan Tunjangan Keluarga:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_t_keluarga']
-                                            .toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['pot_t_keluarga']
-                                            .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan Bon Bensat:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_bon'].toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['pot_bon'].toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan THR:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_thr'].toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['pot_thr'].toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan Simp Koperasi:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_s_koperasi']
-                                            .toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['pot_s_koperasi']
-                                            .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan Cicilan Koperasi:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_cicilan_kop']
-                                            .toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['pot_cicilan_kop']
-                                            .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan Bon Koperasi:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_jajan_kop']
-                                            .toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['pot_jajan_kop']
-                                            .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan Kinerja:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                    _dataPendapatan['pot_kinerja'].toString() ==
-                                            'null'
-                                        ? 'Rp.0'
-                                        : convertToIDR(
-                                            _dataPendapatan['pot_kinerja']
-                                                .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan PPH 21:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_pph21'].toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(_dataPendapatan['pot_pph21']
-                                        .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan Yatim + PPNI:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_yatim_ppni']
-                                            .toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['pot_yatim_ppni']
-                                            .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('Potongan Kasir:'),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(_dataPendapatan['pot_tagihan_kasir']
-                                            .toString() ==
-                                        'null'
-                                    ? 'Rp.0'
-                                    : convertToIDR(
-                                        _dataPendapatan['pot_tagihan_kasir']
-                                            .toString())),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin:
-                                const EdgeInsets.only(right: 15, bottom: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  "Total Potongan: ${convertToIDR(_dataPendapatan['jumlah_potongan'].toString())}",
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Center(
-                child: Card(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 15),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  'Diterima:',
-                                  style: TextStyle(fontSize: 24),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  convertToIDR(
-                                      _dataPendapatan['jumlah_diterima']
-                                          .toString()),
-                                  style: const TextStyle(fontSize: 24),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, Color color, List<Widget> items) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold, color: color),
+            ),
+            const Divider(),
+            ...items,
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSalaryItem(String title, dynamic value,
+      {bool isTotal = false, double fontSize = 16}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title,
+              style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal)),
+          Text(convertToIDR(value?.toString()),
+              style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal)),
+        ],
       ),
     );
   }
