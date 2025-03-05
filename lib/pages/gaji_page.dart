@@ -135,10 +135,23 @@ class _GajiPageState extends State<GajiPage> {
                     _buildSalaryItem(
                         "Potongan BPJS 4%", currentSalary['pot_bpjs_4p']),
                     _buildSalaryItem(
-                        "Potongan Kinerja", currentSalary['pot_kinerja']),
-                    _buildSalaryItem("Potongan THR", currentSalary['pot_thr']),
-                    _buildSalaryItem(
                         "Potongan PPH 21", currentSalary['pot_pph21']),
+                    _buildSalaryItem("Potongan Tagihan Kasir",
+                        currentSalary['pot_tagihan_kasir']),
+                    _buildSalaryItem("Potongan THR", currentSalary['pot_thr']),
+                    _buildSalaryItem("Potongan Tunjangan Kel",
+                        currentSalary['pot_t_keluarga']),
+                    _buildSalaryItem(
+                        "Potongan Yatim PPNI", currentSalary['pot_yatim_ppni']),
+                    _buildSalaryItem("Potongan Cicilan Koperasi",
+                        currentSalary['pot_cicilan_kop']),
+                    _buildSalaryItem("Potongan Pembelian Koperasi",
+                        currentSalary['pot_jajan_kop']),
+                    _buildSalaryItem("Potongan Simpanan Koperasi",
+                        currentSalary['pot_s_koperasi']),
+                    _buildSalaryItem("Potongan Bon", currentSalary['pot_bon']),
+                    _buildSalaryItem(
+                        "Potongan Kinerja", currentSalary['pot_kinerja']),
                     _buildSalaryItem(
                         "Total Potongan", currentSalary['jumlah_potongan'],
                         isTotal: true),
