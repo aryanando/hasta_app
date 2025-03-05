@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:hasta_app/services/api_client.dart';
 
 class RanapListPage extends StatefulWidget {
+  const RanapListPage({super.key});
+
   @override
   _RanapListPageState createState() => _RanapListPageState();
 }
@@ -67,9 +69,9 @@ class _RanapListPageState extends State<RanapListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Ranap List')),
+      appBar: AppBar(title: const Text('Ranap List')),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 Padding(
@@ -78,7 +80,7 @@ class _RanapListPageState extends State<RanapListPage> {
                     controller: searchController,
                     decoration: InputDecoration(
                       hintText: "Search...",
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -92,23 +94,24 @@ class _RanapListPageState extends State<RanapListPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Total Data: ${filteredList.length}",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                SizedBox(height: 5), // Small spacing
+                const SizedBox(height: 5), // Small spacing
                 Expanded(
                   child: ListView.builder(
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       var item = filteredList[index];
                       return Card(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         child: ListTile(
                           title: Text(item['nama'],
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -118,7 +121,8 @@ class _RanapListPageState extends State<RanapListPage> {
                               Text("Kota: ${item['kab']} - ${item['prov']}"),
                             ],
                           ),
-                          trailing: Icon(Icons.arrow_forward_ios, size: 18),
+                          trailing:
+                              const Icon(Icons.arrow_forward_ios, size: 18),
                           onTap: () {
                             showSnackbar("${item['nama']} selected.");
                           },

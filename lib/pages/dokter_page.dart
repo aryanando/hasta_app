@@ -149,8 +149,9 @@ class _DokterPageState extends State<DokterPage> {
               itemCount: _dataDokter.length,
               itemBuilder: (context, index) {
                 final dokter = _dataDokter[index];
-                if (dokter['jadwal_poli'].isEmpty)
+                if (dokter['jadwal_poli'].isEmpty) {
                   return const SizedBox.shrink();
+                }
 
                 return Card(
                   shape: RoundedRectangleBorder(
