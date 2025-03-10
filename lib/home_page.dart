@@ -461,7 +461,7 @@ class _HomePageState extends State<HomePage> {
           ),
           PersistentTabConfig(
             screen: SafeArea(
-              child: ProfilPage(name: widget.name, email: widget.email),
+              child: ProfilPage(),
             ),
             item: ItemConfig(
               icon: const Icon(Icons.tag_faces),

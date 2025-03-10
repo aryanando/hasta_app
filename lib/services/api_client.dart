@@ -24,7 +24,7 @@ class ApiClient {
         onRequest: (options, handler) async {
           // Retrieve token from SharedPreferences
           String? token = await SharedPrefHelper.getToken();
-          print(token);
+          print("🔹 Token: $token");
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
@@ -47,10 +47,9 @@ class ApiClient {
       {Map<String, dynamic>? queryParameters}) async {
     try {
       final response = await dio.get(path, queryParameters: queryParameters);
-
       return response;
     } catch (e) {
-      throw Exception('GET request error: $e');
+      throw Exception('❌ GET request error: $e');
     }
   }
 
@@ -62,7 +61,7 @@ class ApiClient {
           await dio.post(path, data: data, queryParameters: queryParameters);
       return response;
     } catch (e) {
-      throw Exception('POST request error: $e');
+      throw Exception('❌ POST request error: $e');
     }
   }
 }

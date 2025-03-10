@@ -1,68 +1,48 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hasta_app/services/api_client.dart';
 import 'package:hasta_app/widget/number_widget.dart';
 import 'package:http/http.dart' as http;
 
 class ProfilPage extends StatefulWidget {
-  final String name;
-  final String email;
-
-  const ProfilPage({
-    super.key,
-    required this.name,
-    required this.email,
-  });
+  const ProfilPage({super.key});
 
   @override
   State<ProfilPage> createState() => _ProfilPageState();
 }
 
 class _ProfilPageState extends State<ProfilPage> {
-  get onClicked => null;
   bool _alreadyUpload = false;
   String? _tokenSecure;
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+  bool hasError = false;
   final storage = const FlutterSecureStorage();
-
-  void _loadPreferences() async {
-    final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
-    setState(() {
-      _tokenSecure = tokenSecure;
-    });
-    getDataUpload();
-  }
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
+    _loadUserProfile();
   }
 
-  Future<void> getDataUpload() async {
-    String apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/esurvey';
+  Future<void> _loadUserProfile() async {
     try {
-      final response = await http.get(Uri.parse(apiUrl), headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $_tokenSecure',
-      });
-
-      if (response.statusCode == 200) {
-        final dataUpload = json.decode(response.body)['data'];
-
+      final response = await ApiClient().get("/me");
+      if (response.data['success']) {
         setState(() {
-          if (dataUpload['alreadyUp'] == 1) {
-            _alreadyUpload = true;
-          }
+          userData = response.data['data'];
+          isLoading = false;
         });
       } else {
-        debugPrint(apiUrl);
+        throw Exception("Failed to load user data.");
       }
     } catch (e) {
-      if (!context.mounted) {
-        return;
-      } else {}
+      setState(() {
+        isLoading = false;
+        hasError = true;
+      });
+      print("❌ Error fetching user data: $e");
     }
   }
 
@@ -73,113 +53,103 @@ class _ProfilPageState extends State<ProfilPage> {
         backgroundColor: const Color(0xff7fc7d9),
         title: const Text('Profil'),
       ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          photoWidget(),
-          const SizedBox(
-            height: 24,
-          ),
-          nameWidget(widget.name, widget.email),
-          const SizedBox(
-            height: 24,
-          ),
-          const NumbersWidget(),
-          const SizedBox(height: 5),
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0, left: 8.0),
-            child: ElevatedButton.icon(
-              icon: _alreadyUpload
-                  ? const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                    )
-                  : const Icon(
-                      Icons.upload,
-                      color: Colors.red,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : hasError
+              ? const Center(child: Text("Error loading profile data."))
+              : ListView(
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    _buildProfilePhoto(),
+                    const SizedBox(height: 24),
+                    _buildUserInfo(),
+                    const SizedBox(height: 24),
+                    const NumbersWidget(),
+                    const SizedBox(height: 5),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: ElevatedButton.icon(
+                        icon: _alreadyUpload
+                            ? const Icon(Icons.check_circle,
+                                color: Colors.green)
+                            : const Icon(Icons.upload, color: Colors.red),
+                        onPressed: () async {
+                          await Navigator.pushNamed(context, '/upload-esurvey')
+                              .then((value) {
+                            getDataUpload();
+                          });
+                        },
+                        label: Text(_alreadyUpload
+                            ? 'Anda sudah upload E-Survey'
+                            : 'Upload E-Survey'),
+                      ),
                     ),
-              onPressed: () async {
-                await Navigator.pushNamed(context, '/upload-esurvey')
-                    .then((value) {
-                  getDataUpload();
-                });
-              },
-              label: Text(_alreadyUpload
-                  ? 'Anda sudah upload E-Survey'
-                  : 'Upload E-Survey'),
-            ),
-          ),
-        ],
-      ),
+                  ],
+                ),
     );
   }
 
-  Widget nameWidget(String name, String email) {
+  /// 🔹 Builds Profile Information Section
+  Widget _buildUserInfo() {
     return Column(
       children: [
         Text(
-          name,
+          userData?['name'] ?? 'Unknown User',
           style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24),
         ),
+        const SizedBox(height: 4),
         Text(
-          email,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+          userData?['email'] ?? 'No Email Available',
+          style: const TextStyle(color: Colors.grey, fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            "Unit: ${userData?['unit']?[0]['unit_name'] ?? 'N/A'}",
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
         ),
       ],
     );
   }
 
-  Widget photoWidget() {
-    const image = NetworkImage(
-        'https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250');
+  Widget _buildProfilePhoto() {
+    String? imageUrl = userData?['photo'] != null
+        ? 'https://api.batubhayangkara.com/storage/${userData?['photo']}'
+        : null;
+
     return Center(
-      child: Stack(
-        children: [
-          ClipOval(
-            child: Container(
-              padding: const EdgeInsets.all(2),
-              color: Colors.white,
-              child: ClipOval(
-                child: Material(
-                  color: Colors.transparent,
-                  child: Ink.image(
-                    image: image,
-                    fit: BoxFit.cover,
-                    width: 128,
-                    height: 128,
-                    child: InkWell(
-                      onTap: onClicked,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 4,
-            child: ClipOval(
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                color: Colors.white,
-                child: ClipOval(
-                  child: Container(
-                    padding: const EdgeInsets.all(7),
-                    color: Colors.black,
-                    child: const Icon(
-                      color: Colors.white,
-                      Icons.edit,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          )
-        ],
+      child: CircleAvatar(
+        radius: 64,
+        backgroundColor: Colors.grey[200], // Placeholder background
+        backgroundImage: imageUrl != null
+            ? NetworkImage(imageUrl)
+            : const AssetImage("assets/default_avatar.png")
+                as ImageProvider, // Default image
+        onBackgroundImageError: (exception, stackTrace) {
+          print("❌ Image load failed: $exception");
+        },
       ),
     );
+  }
+
+  /// 🔹 Fetches Data Upload Status
+  Future<void> getDataUpload() async {
+    try {
+      final response = await ApiClient().get("/esurvey");
+      if (response.data['success']) {
+        setState(() {
+          _alreadyUpload = response.data['data']['alreadyUp'] == 1;
+        });
+      }
+    } catch (e) {
+      print("❌ Error fetching e-survey status: $e");
+    }
   }
 }
