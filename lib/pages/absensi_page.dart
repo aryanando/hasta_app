@@ -86,52 +86,47 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
     }
   }
 
-  _showSimpleModalDialog(context) {
+  _showSimpleModalDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            backgroundColor: const Color.fromARGB(255, 165, 240, 136),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            child: Container(
-              constraints: const BoxConstraints(maxHeight: 150),
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      RichText(
-                        textAlign: TextAlign.justify,
-                        text: const TextSpan(
-                            text: "Success !!!",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 26,
-                                color: Colors.black,
-                                wordSpacing: 1)),
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            Navigator.of(context, rootNavigator: true).pop();
-                          },
-                          icon: const FaIcon(FontAwesomeIcons.check)),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Text('Tap to Close!!!')
-                    ],
+      context: context,
+      barrierDismissible: false, // prevent dismiss by tapping outside
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: const Color.fromARGB(255, 165, 240, 136),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Container(
+            constraints: const BoxConstraints(maxHeight: 150),
+            padding: const EdgeInsets.all(12.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).pop(); // close dialog
+                Navigator.of(this.context)
+                    .pop(true); // close scan page & return to previous
+              },
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "✅ Absen Berhasil!",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
+                  SizedBox(height: 10),
+                  Icon(Icons.check_circle, size: 48, color: Colors.green),
+                  SizedBox(height: 10),
+                  Text('Tap untuk kembali ke Home')
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   @override

@@ -167,12 +167,16 @@ class _AbsensiComponentState extends State<AbsensiComponent> {
                                   right: 0,
                                   child: Text(
                                     shiftData!['check_in'] != null
-                                        ? "Sudah Absen"
+                                        ? shiftData!['check_out'] != null
+                                            ? "Sudah Pulang"
+                                            : "Sudah Absen"
                                         : "Belum Absen",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: shiftData!['check_in'] != null
-                                          ? Colors.green
+                                          ? shiftData!['check_out'] != null
+                                              ? Colors.blue
+                                              : Colors.green
                                           : Colors.red,
                                     ),
                                   ),
@@ -212,8 +216,10 @@ class _AbsensiComponentState extends State<AbsensiComponent> {
                                 arguments: {
                                   "shiftID": shiftData!['id'].toString()
                                 },
-                              ).then((_) {
-                                fetchAbsensiData(); // 🔄 Refresh Absensi Data after returning
+                              ).then((result) {
+                                if (result == true) {
+                                  fetchAbsensiData(); // ✅ Only re-fetch on success
+                                }
                               });
                             } else if (enableCheckOut) {
                               Navigator.pushNamed(
@@ -222,8 +228,10 @@ class _AbsensiComponentState extends State<AbsensiComponent> {
                                 arguments: {
                                   "shiftID": shiftData!['id'].toString()
                                 },
-                              ).then((_) {
-                                fetchAbsensiData(); // 🔄 Refresh Absensi Data after returning
+                              ).then((result) {
+                                if (result == true) {
+                                  fetchAbsensiData(); // ✅ Only re-fetch on success
+                                }
                               });
                             }
                           }
