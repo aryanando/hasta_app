@@ -9,7 +9,9 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:http/http.dart' as http;
 
 class AbsensiPulangScanPage extends StatefulWidget {
-  const AbsensiPulangScanPage({super.key});
+  final String shiftID;
+
+  const AbsensiPulangScanPage({super.key, required this.shiftID});
 
   @override
   State<StatefulWidget> createState() => _AbsensiPulangPageState();
@@ -18,7 +20,7 @@ class AbsensiPulangScanPage extends StatefulWidget {
 class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
   MobileScannerController cameraControllerCheckout = MobileScannerController();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String? _tokenSecure, _userShiftID;
+  String? _tokenSecure;
   int _isValidQr = 0;
 
   final storage = const FlutterSecureStorage();
@@ -33,10 +35,8 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
 
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
-    final userShiftID = await storage.read(key: 'userShiftId') ?? "{}";
     setState(() {
       _tokenSecure = tokenSecure;
-      _userShiftID = userShiftID;
     });
     _checkToken(tokenSecure);
   }
@@ -62,7 +62,7 @@ class _AbsensiPulangPageState extends State<AbsensiPulangScanPage> {
         final response = await http.put(
           Uri.parse(apiUrl),
           body: jsonEncode({
-            'user_shift_id': _userShiftID,
+            'user_shift_id': widget.shiftID,
           }),
           headers: {
             'Content-Type': 'application/json',

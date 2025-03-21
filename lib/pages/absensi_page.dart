@@ -9,7 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AbsensiScanPage extends StatefulWidget {
-  const AbsensiScanPage({super.key});
+  final String shiftID;
+  const AbsensiScanPage({super.key, required this.shiftID});
 
   @override
   State<StatefulWidget> createState() => _AbsensiScanPageState();
@@ -18,7 +19,7 @@ class AbsensiScanPage extends StatefulWidget {
 class _AbsensiScanPageState extends State<AbsensiScanPage> {
   MobileScannerController cameraControllerCheckout = MobileScannerController();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String? _tokenSecure, _userShiftID;
+  String? _tokenSecure;
   int _isValidQr = 0;
 
   final storage = const FlutterSecureStorage();
@@ -33,11 +34,9 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
 
   void _loadPreferences() async {
     final tokenSecure = await storage.read(key: 'tokenSecure') ?? "";
-    final userShiftID = await storage.read(key: 'userShiftId') ?? "{}";
     // print(userShiftID);
     setState(() {
       _tokenSecure = tokenSecure;
-      _userShiftID = userShiftID;
     });
     _checkToken(tokenSecure);
   }
@@ -63,7 +62,7 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
         final response = await http.put(
           Uri.parse(apiUrl),
           body: jsonEncode({
-            'user_shift_id': _userShiftID,
+            'user_shift_id': widget.shiftID,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -119,7 +118,6 @@ class _AbsensiScanPageState extends State<AbsensiScanPage> {
                       ),
                       IconButton(
                           onPressed: () {
-                            Navigator.of(context, rootNavigator: true).pop();
                             Navigator.of(context, rootNavigator: true).pop();
                           },
                           icon: const FaIcon(FontAwesomeIcons.check)),

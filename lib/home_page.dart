@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hasta_app/components/absensi_notif_card.dart';
+import 'package:hasta_app/components/absensi_component.dart';
 import 'package:hasta_app/components/image_button.dart';
 import 'package:hasta_app/pages/profil_page.dart';
 import 'package:hasta_app/pages/quizzes_page.dart';
+import 'package:hasta_app/services/api_client.dart';
 import 'package:hasta_app/services/helper/shared_perference_helper.dart';
 import 'package:hasta_app/widget/number_home_widget.dart';
 import 'login_screen.dart';
@@ -30,10 +31,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? _tokenSecure;
-  int _cardColor = 0xffffdee4;
-  String _cardTittle = "";
-  String _cardMessage = "";
-  String _absensiState = "/absensi-cam";
   bool _alreadyUpload = false;
   final Map _dataPengumuman = {};
 
@@ -43,7 +40,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _tokenSecure = tokenSecure;
     });
-    getAbsensiData(_tokenSecure);
     getPengumuman(_tokenSecure);
     getDataUpload();
   }
@@ -106,81 +102,30 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadPreferences();
-    _cardColor = 0xffdddddd;
-    _cardTittle = "Anda sedang Off (Libur)";
-    _cardMessage = "Jika ada kesalahan silahkan hubungi Karu, selamat berlibur";
-    _absensiState = "/jadwal";
   }
 
   var now = DateTime.now();
   var formatter = DateFormat('yyyy-MM-dd');
   late String formattedDate = formatter.format(now);
 
-  Future<void> handleLogout(String token) async {
-    const url = '${const String.fromEnvironment('devUrl')}api/v1/logout';
-    final headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
+  Future<void> handleLogout(BuildContext context) async {
+    final storage = const FlutterSecureStorage();
 
-    await http.post(Uri.parse(url), headers: headers);
-    await storage.deleteAll();
-    await SharedPrefHelper.removeToken();
+    try {
+      await ApiClient().post('/logout'); // Use ApiClient (Dio) instead of http
+      await storage.deleteAll();
+      await SharedPrefHelper.removeToken();
+    } catch (error) {
+      debugPrint('Logout failed: $error');
+    }
 
     if (!context.mounted) return;
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
       (route) => false,
     );
-  }
-
-  Future<void> getAbsensiData(String? myToken) async {
-    const apiUrl = '${const String.fromEnvironment('devUrl')}api/v1/absensi';
-    try {
-      final response = await http.get(Uri.parse(apiUrl), headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $myToken',
-      });
-
-      if (response.statusCode == 200) {
-        final dataAbsensiHariIni = json.decode(response.body)['data'];
-
-        if (dataAbsensiHariIni['check_in'] == null) {
-          setState(() {
-            _cardColor = 0xffffbaba;
-            _cardTittle = "Anda Belum Absen";
-            _cardMessage = "Untuk absensi silahkan ketuk notif ini!!!";
-            _absensiState = "/absensi-cam";
-          });
-          await storage.write(
-              key: 'userShiftId', value: jsonEncode(dataAbsensiHariIni['id']));
-        } else if (dataAbsensiHariIni['check_out'] == null) {
-          setState(() {
-            _cardColor = 0xffa4ffa4;
-            _cardTittle = "Anda Telah Checkin";
-            _cardMessage = "Untuk pulang silahkan ketuk notif ini sekali lagi";
-            _absensiState = "/absensi-pulang-cam";
-          });
-          await storage.write(
-              key: 'userShiftId', value: jsonEncode(dataAbsensiHariIni['id']));
-        } else {
-          setState(() {
-            _cardColor = 0xff91d2ff;
-            _cardTittle = "Anda Telah Checkout";
-            _cardMessage = "Selamat sore, hati-hati dijalan, sampai jumpa esok";
-            _absensiState = "/jadwal";
-          });
-        }
-      } else {
-        debugPrint(apiUrl);
-      }
-    } catch (e) {
-      if (!context.mounted) {
-        return;
-      } else {}
-    }
   }
 
   @override
@@ -229,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                                     color: const Color(0xffdcf2f1),
                                     borderRadius: BorderRadius.circular(12)),
                                 child: IconButton(
-                                  onPressed: () => handleLogout(_tokenSecure!),
+                                  onPressed: () => handleLogout(context),
                                   icon: const Icon(Icons.logout),
                                 ),
                               )
@@ -242,26 +187,7 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(
                             height: 10,
                           ),
-                          ListView(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            children: [
-                              GestureDetector(
-                                onTap: () async {
-                                  await Navigator.pushNamed(
-                                    context,
-                                    _absensiState,
-                                  ).then((value) {
-                                    getAbsensiData(_tokenSecure);
-                                  });
-                                },
-                                child: AbsensiNotifCard(
-                                    cardColor: _cardColor,
-                                    cardTittle: _cardTittle,
-                                    cardMessage: _cardMessage),
-                              ),
-                            ],
-                          ),
+                          AbsensiComponent(),
                           const SizedBox(
                             height: 10,
                           ),
